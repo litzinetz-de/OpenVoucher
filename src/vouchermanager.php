@@ -141,9 +141,4 @@ class vouchermanager {
 		}
 	}
 }
-
-$v=new vouchermanager();
-//$v->DropDevice('mac','00:0c:29:39:1c:f2');
-$v->AuthDevice('2013-10-25-170796','mac','00:0c:29:39:1c:f2');
-//$v->BuildIPTables();
 ?>

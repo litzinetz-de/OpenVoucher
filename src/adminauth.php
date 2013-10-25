@@ -68,15 +68,24 @@ class adminauth
 		
 	}
 	
-	public function logout()
+	public function Logout()
 	{
 		session_start();
 		$_SESSION = array();
 		session_destroy();
 		header('Location: index.php');
 	}
+	
+	public function CheckPermission($permission) // Check if the logged in user has a specific permission
+	{
+		$res=mysql_query('SELECT COUNT(*) AS cnt FROM permissions WHERE username="'.$_SESSION['login'].'" AND permission="'.$permission.'"',$this->mysqlconn);
+		$row=mysql_fetch_array($res);
+		if($row['cnt']>0)
+		{
+			return true;
+		} else {
+			return false;
+		}
+	}
 }
-
-$auth = new adminauth();
-$auth->logout();
 ?>

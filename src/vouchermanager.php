@@ -35,7 +35,7 @@ class vouchermanager {
 	{
 		$ipt='#!/bin/sh'."\n\n".
 
-		'IPT=\''.$this->settings['system']['iptables'].'\''."\n".
+		'IPT=\'sudo '.$this->settings['system']['iptables'].'\''."\n".
 		'LAN='.$this->settings['interfaces']['internal'].''."\n".
 		'INET='.$this->settings['interfaces']['external'].''."\n\n".
 
@@ -73,15 +73,27 @@ class vouchermanager {
 		'# Activate masquerading'."\n".
 		'$IPT -t nat -A POSTROUTING -o $INET -j MASQUERADE'."\n\n".
 
-		'# List of allowed MAC-addresses';
+		'# List of allowed MAC addresses'."\n";
 		
 		$res=mysql_query('SELECT devices.addr FROM devices INNER JOIN vouchers ON devices.voucher_id=vouchers.voucher_id WHERE type="mac" AND valid_until>'.time(),$this->mysqlconn);
 		while($row=mysql_fetch_array($res))
 		{
 			$ipt=$ipt.'$IPT -A FORWARD -i $LAN -o $INET -m mac --mac-source '.$row['addr'].' -j ACCEPT'."\n";
 		}
+		
+		$ipt=$ipt."\n".
+		'# List of allowed IP addresses'."\n";
+		
+		$res=mysql_query('SELECT devices.addr FROM devices INNER JOIN vouchers ON devices.voucher_id=vouchers.voucher_id WHERE type="ipv4" AND valid_until>'.time(),$this->mysqlconn);
+		while($row=mysql_fetch_array($res))
+		{
+			$ipt=$ipt.'$IPT -A INPUT -m state --state NEW -s '.$row['addr'].' -j ACCEPT'."\n";
+		}
+		
 		file_put_contents($this->settings['system']['tmpdir'].'iptables-autogen.sh',$ipt);
-		shell_exec('chmod u+x '.$this->settings['system']['tmpdir'].'iptables-autogen.sh');
+		shell_exec('chmod ugo+x '.$this->settings['system']['tmpdir'].'iptables-autogen.sh');
+		$runcmd=$this->settings['system']['tmpdir'].'iptables-autogen.sh';
+		shell_exec($runcmd);
 	}
 	
 	public function MakeVoucher($devicecount,$valid_until,$comment)
@@ -92,6 +104,31 @@ class vouchermanager {
 			return $vid;
 		} else {
 			return false;
+		}
+	}
+	
+	public function AuthDevice($vid,$type,$addr)
+	{
+		// Voucher valid?
+		$res=mysql_query('SELECT dev_count,valid_until FROM vouchers WHERE voucher_id="'.$vid.'"',$this->mysqlconn);
+		$row=mysql_fetch_array($res);
+		if(trim($row['valid_until'])=='' || $row['valid_until']<=time()) // Voucher not found or exceeded
+		{
+			return 'not-found-exceeded ';
+		} else {
+			$res=mysql_query('SELECT COUNT(*) AS cnt FROM devices WHERE voucher_id="'.$vid.'"',$this->mysqlconn);
+			$row_dev=mysql_fetch_array($res);
+			if(trim($row_dev['cnt'])=='' || $row_dev['cnt']>=$row['dev_count']) // Maximum number of devices reached or exceeded, or not able to get number of devices (database failure?)
+			{
+				return 'maxnumber-reached';
+			} else {
+				if(mysql_query('INSERT INTO devices VALUES ("'.$type.'","'.$addr.'","'.$vid.'")',$this->mysqlconn))
+				{
+					return 'ok'; // Device has been authenticated
+				} else {
+					return 'db-error'; // Database error
+				}
+			}
 		}
 	}
 }

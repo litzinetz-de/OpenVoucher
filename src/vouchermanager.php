@@ -69,7 +69,7 @@ class vouchermanager {
 		$res=mysql_query('SELECT devices.addr FROM devices INNER JOIN vouchers ON devices.voucher_id=vouchers.voucher_id WHERE type="ipv4" AND valid_until>'.time(),$this->mysqlconn);
 		while($row=mysql_fetch_array($res))
 		{
-			// TODO
+			$ipt=$ipt.'$IPTABLES -t mangle -A captivePortal -s '.$row['addr'].' -j RETURN'."\n";
 		}
 		
 		$ipt=$ipt."\n".
@@ -137,8 +137,14 @@ class vouchermanager {
 		}
 		if($type=='ipv4')
 		{
-			// TODO
+			mysql_query('DELETE FROM devices WHERE type="ipv4" AND addr="'.$addr.'"',$this->mysqlconn);
+			shell_exec('sudo '.$this->settings['system']['iptables'].' -t mangle -D captivePortal -s '.$addr.' -j RETURN');
 		}
 	}
 }
+//$v=new vouchermanager();
+//$v->DropDevice('mac','00:0c:29:39:1c:f2');
+//echo $v->AuthDevice('2013-10-25-170796','ipv4','1.1.1.10');
+//$v->DropDevice('ipv4','1.1.1.10');
+//$v->AuthDevice('2013-10-25-170796','mac','00:0c:29:39:1c:f2');
 ?>

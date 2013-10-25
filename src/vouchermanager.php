@@ -35,50 +35,32 @@ class vouchermanager {
 	{
 		$ipt='#!/bin/sh'."\n\n".
 
-		'IPT=\'sudo '.$this->settings['system']['iptables'].'\''."\n".
-		'LAN='.$this->settings['interfaces']['internal'].''."\n".
-		'INET='.$this->settings['interfaces']['external'].''."\n\n".
+		'IPTABLES=\'sudo /sbin/iptables\''."\n".
+		'PORTAL_INT='.$this->settings['interfaces']['internal'].''."\n".
+		'OUTPUT_INT='.$this->settings['interfaces']['external'].''."\n\n".
 
 
 		'# Flush (delete all rules in chain)'."\n".
-		'$IPT -F'."\n".
-		'$IPT -t nat -F'."\n".
-		'$IPT -t mangle -F'."\n\n".
+		'$IPTABLES -F'."\n".
+		'$IPTABLES -X'."\n".
+		'$IPTABLES -t nat -F'."\n".
+		'$IPTABLES -t nat -X'."\n".
+		'$IPTABLES -t mangle -F'."\n".
+		'$IPTABLES -t mangle -X'."\n".
+		'$IPTABLES -P INPUT ACCEPT'."\n".
+		'$IPTABLES -P FORWARD ACCEPT'."\n".
+		'$IPTABLES -P OUTPUT ACCEPT'."\n\n".
 
-		'# Delete chains'."\n".
-		'$IPT -X'."\n".
-		'$IPT -t nat -X'."\n".
-		'$IPT -t mangle -X'."\n\n".
-
-		'# Default policies - Allow traffic to and from server, drop forwarding by default (unless a client has been authenticated)'."\n".
-		'$IPT -P INPUT ACCEPT'."\n".
-		'$IPT -P FORWARD DROP'."\n".
-		'$IPT -P OUTPUT ACCEPT'."\n\n".
-
-		'# Allow established'."\n".
-		'$IPT -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT'."\n".
-		'$IPT -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT'."\n\n".
-
-		'# Drop invalid packets'."\n".
-		'$IPT -N INVALID'."\n\n".
-
-		'$IPT -A INVALID -m limit --limit 3/s -j LOG --log-prefix "INVALID "'."\n".
-		'$IPT -A INVALID -j DROP'."\n\n".
-
-		'$IPT -A INPUT -m state --state INVALID -j INVALID'."\n".
-		'$IPT -A FORWARD -m state --state INVALID -j INVALID'."\n".
-		'$IPT -A OUTPUT -m state --state INVALID -j INVALID'."\n\n".
-
-
-		'# Activate masquerading'."\n".
-		'$IPT -t nat -A POSTROUTING -o $INET -j MASQUERADE'."\n\n".
+		'# Chain for captive portal'."\n".
+		'$IPTABLES -N captivePortal -t mangle'."\n".
+		'$IPTABLES -t mangle -A PREROUTING -j captivePortal'."\n\n".
 
 		'# List of allowed MAC addresses'."\n";
 		
 		$res=mysql_query('SELECT devices.addr FROM devices INNER JOIN vouchers ON devices.voucher_id=vouchers.voucher_id WHERE type="mac" AND valid_until>'.time(),$this->mysqlconn);
 		while($row=mysql_fetch_array($res))
 		{
-			$ipt=$ipt.'$IPT -A FORWARD -i $LAN -o $INET -m mac --mac-source '.$row['addr'].' -j ACCEPT'."\n";
+			$ipt=$ipt.'$IPTABLES -t mangle -A captivePortal -m mac --mac-source '.$row['addr'].' -j RETURN'."\n";
 		}
 		
 		$ipt=$ipt."\n".
@@ -87,8 +69,21 @@ class vouchermanager {
 		$res=mysql_query('SELECT devices.addr FROM devices INNER JOIN vouchers ON devices.voucher_id=vouchers.voucher_id WHERE type="ipv4" AND valid_until>'.time(),$this->mysqlconn);
 		while($row=mysql_fetch_array($res))
 		{
-			$ipt=$ipt.'$IPT -A INPUT -m state --state NEW -s '.$row['addr'].' -j ACCEPT'."\n";
+			// TODO
 		}
+		
+		$ipt=$ipt."\n".
+		'# DNS is allowed for all'."\n".
+		'$IPTABLES -t mangle -A captivePortal -i $PORTAL_INT -p udp --dport 53 -j RETURN'."\n\n".
+		'# Mark packets that are not allowed till here'."\n".
+		'$IPTABLES -t mangle -A captivePortal -i $PORTAL_INT -j MARK --set-mark 99'."\n\n".
+		'# Redirect unauthenticated clients to captive portal'."\n".
+		'$IPTABLES -t nat -A PREROUTING -m mark --mark 99 -i $PORTAL_INT -p tcp --dport 80 -j DNAT --to-destination '.$this->settings['interfaces']['internal_ip']."\n\n".
+		
+		'# drop all marked with 99'."\n".
+		'$IPTABLES -t filter -A FORWARD -m mark --mark 99 -j DROP'."\n\n".
+		'# masquerading NAT'."\n".
+		'$IPTABLES -t nat -A POSTROUTING -o $OUTPUT_INT -j MASQUERADE';
 		
 		file_put_contents($this->settings['system']['tmpdir'].'iptables-autogen.sh',$ipt);
 		shell_exec('chmod ugo+x '.$this->settings['system']['tmpdir'].'iptables-autogen.sh');
@@ -124,6 +119,7 @@ class vouchermanager {
 			} else {
 				if(mysql_query('INSERT INTO devices VALUES ("'.$type.'","'.$addr.'","'.$vid.'")',$this->mysqlconn))
 				{
+					$this->BuildIPTables();
 					return 'ok'; // Device has been authenticated
 				} else {
 					return 'db-error'; // Database error
@@ -131,5 +127,23 @@ class vouchermanager {
 			}
 		}
 	}
+	
+	public function DropDevice($type,$addr)
+	{
+		if($type=='mac')
+		{
+			mysql_query('DELETE FROM devices WHERE type="mac" AND addr="'.$addr.'"',$this->mysqlconn);
+			shell_exec('sudo '.$this->settings['system']['iptables'].' -t mangle -D captivePortal -m mac --mac-source '.$addr.' -j RETURN');
+		}
+		if($type=='ipv4')
+		{
+			// TODO
+		}
+	}
 }
+
+$v=new vouchermanager();
+//$v->DropDevice('mac','00:0c:29:39:1c:f2');
+$v->AuthDevice('2013-10-25-170796','mac','00:0c:29:39:1c:f2');
+//$v->BuildIPTables();
 ?>

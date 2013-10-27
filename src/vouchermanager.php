@@ -102,6 +102,33 @@ class vouchermanager {
 		}
 	}
 	
+	public function DropVoucher($vid,$rebuild=true)
+	{
+		// Delete voucher from db
+		mysql_query('DELETE FROM vouchers WHERE voucher_id="'.$vid.'"',$this->mysqlconn);
+		mysql_query('DELETE FROM devices WHERE voucher_id="'.$vid.'"',$this->mysqlconn);
+		if(mysql_affected_rows($this->mysqlconn)>0) // if a voucher has been deleted, rebuild iptables
+		{
+			if($rebuild)
+			{
+				$this->BuildIPTables(); // only rebuild tables if it is necessary
+			}
+		}
+	}
+	
+	public function DropOldVouchers()
+	{
+		// Look for expired vouchers in db
+		$res=mysql_query('SELECT voucher_id FROM vouchers WHERE valid_until<'.time(),$this->mysqlconn);
+		while($row=mysql_fetch_array($res))
+		{
+			// Drop found vouchers but to not rebuild iptables for each one. this would waste resources
+			$this->DropVoucher($row['voucher_id'],false);
+		}
+		// After deletion, rebuild iptables once
+		$this->BuildIPTables();
+	}
+	
 	public function AuthDevice($vid,$type,$addr)
 	{
 		// Voucher valid?

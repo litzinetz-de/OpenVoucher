@@ -31,6 +31,32 @@ class vouchermanager {
 		return $vid;
 	}
 	
+	private function GetClientMAC()
+	{
+		$ipAddress=$_SERVER['REMOTE_ADDR'];
+		$macAddr=false;
+
+		// run the external command, break output into lines
+		$arp=`arp -a $ipAddress`;
+		$lines=explode("\n", $arp);
+
+		//look for the output line describing our IP address
+		foreach($lines as $line)
+		{
+			$cols=preg_split('/\s+/', trim($line));
+			if ($cols[0]==$ipAddress)
+			{
+				$macAddr=$cols[1];
+			}
+		}
+		return $macAddr;
+	}
+
+	private function GetClientIP()
+	{
+		return $_SERVER['REMOTE_ADDR'];
+	}
+	
 	public function BuildIPTables()
 	{
 		$ipt='#!/bin/sh'."\n\n".
@@ -190,6 +216,27 @@ class vouchermanager {
 		if($row['voucher_id']==$vid)
 		{
 			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	// Is the requesting client authenticated?
+	public function ClientAuthenticated()
+	{
+		if($mac=$this->GetClientMAC())
+		{
+			$type='mac';
+			$addr=$mac;
+		} else {
+			$type='ipv4';
+			$addr=$this->GetClientIP();
+		}
+		$res=mysql_query('SELECT voucher_id FROM devices WHERE type="'.$type.'" AND addr="'.$addr.'"',$this->mysqlconn);
+		$row=mysql_fetch_array($res);
+		if(trim($row['voucher_id'])!='')
+		{
+			$clientdata=array($type,$addr);
 		} else {
 			return false;
 		}

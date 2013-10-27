@@ -168,5 +168,31 @@ class vouchermanager {
 			shell_exec('sudo '.$this->settings['system']['iptables'].' -t mangle -D captivePortal -s '.$addr.' -j RETURN');
 		}
 	}
+	
+	// Return a list of all devices that are registered to a specific voucher
+	public function GetDeviceList($vid)
+	{
+		$res=mysql_query('SELECT type,addr FROM devices WHERE voucher_id="'.$vid.'"',$this->mysqlconn);
+		$i=0;
+		$devices=array();
+		while($row=mysql_fetch_array($res))
+		{
+			$devices[$i]=$row;
+		}
+		return $devices;
+	}
+
+	// Check if a specific device is registered to a specific voucher
+	public function DeviceInVoucher($vid,$type,$addr)
+	{
+		$res=mysql_query('SELECT voucher_id FROM devices WHERE type="'.$type.'" AND addr="'.$addr.'"',$this->mysqlconn);
+		$row=mysql_fetch_array($res);
+		if($row['voucher_id']==$vid)
+		{
+			return true;
+		} else {
+			return false;
+		}
+	}
 }
 ?>

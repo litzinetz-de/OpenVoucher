@@ -31,28 +31,26 @@ class vouchermanager {
 		return $vid;
 	}
 	
-	private function GetClientMAC()
+	public function GetClientMAC($ipAddress='')
 	{
-		$ipAddress=$_SERVER['REMOTE_ADDR'];
-		$macAddr=false;
+		if($ipAddress=='')
+		{
+			$ipAddress=$_SERVER['REMOTE_ADDR'];
+		}
+		$macAddr='';
 
 		// run the external command, break output into lines
-		$arp=`arp -a $ipAddress`;
-		$lines=explode("\n", $arp);
-
-		//look for the output line describing our IP address
-		foreach($lines as $line)
-		{
-			$cols=preg_split('/\s+/', trim($line));
-			if ($cols[0]==$ipAddress)
-			{
-				$macAddr=$cols[1];
-			}
-		}
+		//$arp=`arp -a $ipAddress`;
+		$arp=shell_exec($this->settings['system']['arp'].' -a '.$ipAddress);
+		
+		$x=strpos($arp,':');
+		$begin=$x-2;
+		$macAddr=substr($arp,$begin,17);
+		
 		return $macAddr;
 	}
 
-	private function GetClientIP()
+	public function GetClientIP()
 	{
 		return $_SERVER['REMOTE_ADDR'];
 	}
@@ -153,6 +151,12 @@ class vouchermanager {
 		}
 		// After deletion, rebuild iptables once
 		$this->BuildIPTables();
+	}
+	
+	// Find out the authentication method that should be used for the client
+	public function GetAuthMethod()
+	{
+		return $this->settings['system']['authentication'];
 	}
 	
 	public function AuthDevice($vid,$type,$addr)

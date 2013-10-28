@@ -166,7 +166,7 @@ class vouchermanager {
 		$row=mysql_fetch_array($res);
 		if(trim($row['valid_until'])=='' || $row['valid_until']<=time()) // Voucher not found or exceeded
 		{
-			return 'not-found-exceeded ';
+			return 'not-found-exceeded';
 		} else {
 			$res=mysql_query('SELECT COUNT(*) AS cnt FROM devices WHERE voucher_id="'.$vid.'"',$this->mysqlconn);
 			$row_dev=mysql_fetch_array($res);

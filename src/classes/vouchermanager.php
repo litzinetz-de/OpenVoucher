@@ -228,7 +228,8 @@ class vouchermanager {
 	// Is the requesting client authenticated?
 	public function ClientAuthenticated()
 	{
-		if($mac=$this->GetClientMAC())
+		$mac=$this->GetClientMAC();
+		if($mac!='')
 		{
 			$type='mac';
 			$addr=$mac;
@@ -240,10 +241,23 @@ class vouchermanager {
 		$row=mysql_fetch_array($res);
 		if(trim($row['voucher_id'])!='')
 		{
-			$clientdata=array($type,$addr);
+			return array($type,$addr,$row['voucher_id']);
 		} else {
-			return false;
+			return 'noauth';
 		}
+	}
+	
+	// Get some voucher information from db
+	public function GetVoucherInfo($vid)
+	{
+		$res=mysql_query('SELECT dev_count,valid_until FROM vouchers WHERE voucher_id="'.$vid.'"',$this->mysqlconn);
+		$row=mysql_fetch_array($res);
+		
+		$res=mysql_query('SELECT COUNT(*) AS cnt FROM devices WHERE voucher_id="'.$vid.'"',$this->mysqlconn);
+		$cnt=mysql_fetch_array($res);
+		
+		$row['remain']=$row['dev_count']-$cnt['cnt']; // Calculate how many devices are left to register
+		return $row;
 	}
 }
 ?>

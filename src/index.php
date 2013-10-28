@@ -1,4 +1,4 @@
 <?php
-header('Location: /landing/');
+header('Location: http://'.$_SERVER['SERVER_ADDR'].'/landing/');
 die();
 ?>

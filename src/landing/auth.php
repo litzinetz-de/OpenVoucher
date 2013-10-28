@@ -31,8 +31,13 @@ if($authtype=='mac-only')
 
 if($auth_error!='')
 {
-	echo $auth_error;
+	include('../includes/header.php');
+	
+	echo 'There has been a Problem authenticating your device.<br><br>';
+	
+	if($auth_error=='no-mac') { echo 'I wasn\'t able to read your device\'n network address. Please contact an administrator.'; }
+	if($auth_error=='no-auth-method') { echo 'I wasn\'t able to read the authentication method from the config. Please contact an administrator.'; }
 } else {
-	echo 'ok';
+	header('Location: index.php');
 }
 ?>

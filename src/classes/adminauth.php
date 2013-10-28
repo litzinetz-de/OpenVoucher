@@ -45,22 +45,18 @@ class adminauth
 		
 		if(!$this->auth_ok)
 		{
-			echo '<html>
-			<head>
-			<title>Login</title>
-			</head>
-			<body>
-			<center><b>Please login</b></center>
+			include('../includes/header.php');
+			echo '<center><b>Please login</b></center>
 			<tr>
 			<form action="'.$_SERVER['PHP_SELF'].'" method="post">
 			<table border="0">
 			<td>Username:</td>
-			<td><input type="text" name="user" value="'.$_COOKIE['LastUsername'].'"></td>
+			<td><input type="text" name="user" value="'.$_COOKIE['LastUsername'].'" class="formstyle"></td>
 			</tr><tr>
 			<td>Password:</td>
-			<td><input type="password" name="pwd">
+			<td><input type="password" name="pwd" class="formstyle">
 			</td></tr></table>
-			<br><input type="submit" value="Login"></form>
+			<br><input type="submit" value="Login" class="formstyle"></form>
 			</body>
 			</html>';
 			die();

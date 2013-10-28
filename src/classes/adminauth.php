@@ -12,7 +12,7 @@ class adminauth
 		$this->auth_ok=true;
 		session_start();
 		
-		$this->settings=parse_ini_file('.settings.ini',TRUE);
+		$this->settings=parse_ini_file('../.settings.ini',TRUE);
 		$this->mysqlconn=mysql_connect($this->settings['mysql']['host'],$this->settings['mysql']['user'],$this->settings['mysql']['pwd']);
 		mysql_select_db($this->settings['mysql']['db'],$this->mysqlconn);
 		
@@ -39,9 +39,18 @@ class adminauth
 				if($row['cnt']==0 || trim($row['cnt'])=='')
 				{
 					$this->auth_ok=false; // Username in session not found in database or database error
+					echo 'user not found';
 				}
 			}
-		} // If auth_ok has not been set to false until this point, the user is authenticated
+		}
+		
+		if($this->auth_ok) // so far so good...
+		{
+			// ...but is the user allowed to log in via admin panel?
+			$this->auth_ok=$this->CheckPermission('admin_login');
+		}
+		
+		// If auth_ok has not been set to false until this point, the user is authenticated
 		
 		if(!$this->auth_ok)
 		{
@@ -82,6 +91,11 @@ class adminauth
 		} else {
 			return false;
 		}
+	}
+	
+	public function GetUsername()
+	{
+		return $_SESSION['login'];
 	}
 }
 ?>

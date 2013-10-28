@@ -5,7 +5,7 @@ class vouchermanager {
 	
 	function __construct()
 	{
-		$this->settings=parse_ini_file('.settings.ini',TRUE);
+		$this->settings=parse_ini_file('../.settings.ini',TRUE);
 		$this->mysqlconn=mysql_connect($this->settings['mysql']['host'],$this->settings['mysql']['user'],$this->settings['mysql']['pwd']);
 		mysql_select_db($this->settings['mysql']['db'],$this->mysqlconn);
 	}

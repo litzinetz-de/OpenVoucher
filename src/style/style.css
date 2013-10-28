@@ -1,6 +1,68 @@
-body
+body {
+	color: #000000;
+	background-color: #edf7ff;
+	font: 13px/20px Arial,Helvetica,sans-serif;
+	/*background-color: #F7F7F7;*/
+}
+td {
+	font: 13px/20px Arial,Helvetica,sans-serif;
+}
+a
 {
-  background: #B2DFFF;
-  font-family: Arial,sans-serif;
-  font-size: 14;
+	color: #339ABB;
+}
+a, a:hover {
+    text-decoration: none;
+}
+.header {
+	font-size: 60;
+	color: #6E6E6E;
+}
+.big {
+	font-size: 40;
+}
+.middle {
+	font-size: 30;
+}
+.small {
+	font-size: 20;
+}
+.lightbg
+{
+	/*background-color: #F7F7F7;*/
+	background-color: #d7edff;
+}
+.darkbg
+{
+	/*background-color: #e0e0e0;*/
+	background-color: #bde2ff;
+}
+.roinput
+{
+	background-color: #c0c0c0;
+	border: 1px solid #285b84;
+}
+.posselect
+{
+	width: 100%;
+}
+.posinput
+{
+	width: 100%;
+	border: 1;
+}
+tr.tableheader
+{
+	/*background-color: #c0c0c0;*/
+	background-color: #285b84;
+	color: #ffffff;
+}
+.formstyle
+{
+	background-color: #e5f1ff;
+	border: 1px solid #285b84;
+}
+td.smalltd
+{
+	font: 10px Arial,Helvetica,sans-serif;
 }

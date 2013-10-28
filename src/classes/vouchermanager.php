@@ -259,5 +259,11 @@ class vouchermanager {
 		$row['remain']=$row['dev_count']-$cnt['cnt']; // Calculate how many devices are left to register
 		return $row;
 	}
+	
+	// Generate a voucher list
+	public function GetVoucherList($searchstring)
+	{
+		//
+	}
 }
 ?>

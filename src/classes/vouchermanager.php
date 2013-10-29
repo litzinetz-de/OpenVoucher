@@ -261,9 +261,15 @@ class vouchermanager {
 	}
 	
 	// Generate a voucher list
-	public function GetVoucherList($searchstring)
+	public function GetVoucherList($searchstring='')
 	{
-		//
+		$dataset=array();
+		$res=mysql_query('SELECT voucher_id,dev_count,valid_until,comment FROM vouchers '.$searchstring);
+		while($row=mysql_fetch_array($res))
+		{
+			array_push($dataset,$row);
+		}
+		return $dataset;
 	}
 }
 ?>

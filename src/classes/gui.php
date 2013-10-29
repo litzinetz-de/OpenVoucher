@@ -49,5 +49,35 @@ class admingui
 		}
 		echo '</table></center>';
 	}
+
+	public function ListUsers($dataset)
+	{
+		echo '<center><table width="80%" border="0">
+		<tr class="tableheader">
+		<td><b>Username</b></td>
+		<td><b>Permissions</b></td>
+		<td><b>Delete user</b></td>
+		</tr>';
+		
+		$a=true;
+		for($i=0;$i<count($dataset);$i++)
+		{
+			if($a)
+			{
+				$bgclass='lightbg';
+				$a=false;
+			} else {
+				$bgclass='darkbg';
+				$a=true;
+			}
+			echo '<tr class="'.$bgclass.'">
+			<td>'.$dataset[$i]['username'].'</td>
+			<td>'.$dataset[$i]['permission_list'].' &gt; <a href="users.php?do=edit_perm&user='.$dataset[$i]['username'].'">Edit permissions</a></td>
+			<td><a href="delete_user.php?user='.$dataset[$i]['username'].'">Delete user</a></td>
+			</td>
+			</tr>';
+		}
+		echo '</table></center>';
+	}
 }
 ?>

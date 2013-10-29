@@ -208,6 +208,7 @@ class vouchermanager {
 		while($row=mysql_fetch_array($res))
 		{
 			$devices[$i]=$row;
+			$i++;
 		}
 		return $devices;
 	}

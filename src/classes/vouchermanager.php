@@ -146,7 +146,7 @@ class vouchermanager {
 		$res=mysql_query('SELECT voucher_id FROM vouchers WHERE valid_until<'.time(),$this->mysqlconn);
 		while($row=mysql_fetch_array($res))
 		{
-			// Drop found vouchers but to not rebuild iptables for each one. this would waste resources
+			// Drop found vouchers but do not rebuild iptables for each one. this would waste resources
 			$this->DropVoucher($row['voucher_id'],false);
 		}
 		// After deletion, rebuild iptables once

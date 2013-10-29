@@ -44,7 +44,7 @@ class admingui
 			}
 			
 			echo '&nbsp;</td>
-			<td>a&nbsp;</td>
+			<td><a href="dropvoucher.php?vid='.$dataset[$i]['voucher_id'].'">Drop voucher</a></td>
 			</tr>';
 		}
 		echo '</table></center>';

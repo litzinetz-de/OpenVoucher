@@ -122,7 +122,7 @@ class vouchermanager {
 		{
 			return $vid;
 		} else {
-			return false;
+			return 0;
 		}
 	}
 	

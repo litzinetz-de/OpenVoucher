@@ -5,7 +5,7 @@ class admingui
 	
 	function __construct()
 	{
-		$this->v = new vouchermanager();
+		$this->v = new vouchermanager(); // An own instance of vouchermanager is needed to query the devices that are connected to each voucher
 	}
 	public function ListVouchers($dataset)
 	{
@@ -46,7 +46,6 @@ class admingui
 			echo '&nbsp;</td>
 			<td>a&nbsp;</td>
 			</tr>';
-			//print_r($row);
 		}
 		echo '</table></center>';
 	}

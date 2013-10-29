@@ -22,12 +22,14 @@ if((is_numeric($_POST['cnt']) && trim($_POST['cnt'])!='') && ($_POST['d']!=0 || 
 	// Include and load the vouchermanager
 	require('../classes/vouchermanager.php');
 	$v = new vouchermanager();
+
+	if(!is_numeric($_POST['dev-cnt'])) $_POST['dev-cnt']=1; // Has the user enterered a numeric value for the device count?
 	
 	$voucher_ids=array();
 	for($i=1;$i<=$_POST['cnt'];$i++)
 	{
 		$valid_until=time()+($_POST['d']*86400)+($_POST['h']*3600)+($_POST['m']*60); // Calculate expiration time
-		array_push($voucher_ids,$v->MakeVoucher(1,$valid_until,''));
+		array_push($voucher_ids,$v->MakeVoucher($_POST['dev-cnt'],$valid_until,$_POST['comment']));
 	}
 	print_r($voucher_ids);
 } else {
@@ -38,6 +40,10 @@ if((is_numeric($_POST['cnt']) && trim($_POST['cnt'])!='') && ($_POST['d']!=0 || 
 	<input type="text" class="formstyle" name="d" size="2" value="0"> days, <input type="text" class="formstyle" name="h" size="2" value="4"> hours, 
 	<input type="text" class="formstyle" name="m" size="2" value="0"> minutes
 	<br><br>
+	How many devices may the user register with this voucher?<br>
+	<input type="text" class="formstyle" name="dev-cnt" size="2" value="3"> devices<br><br>
+	You may enter a comment if you with (e.g. the user\'s name):<br>
+	<input type="text" class="formstyle" name="comment" size="20"><br><br>
 
 	<input type="checkbox" name="print" value="y" class="formstyle" checked> Print vouchers in PDF
 	<br><br><input type="submit" value="Create" class="formstyle"></form>';

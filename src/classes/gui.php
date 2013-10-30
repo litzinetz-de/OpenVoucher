@@ -9,7 +9,7 @@ class admingui
 	}
 	public function ListVouchers($dataset)
 	{
-		echo '<center><table width="80%" border="0">
+		echo '<center><table width="80%" border="0" cellspacing="0">
 		<tr class="tableheader">
 		<td><b>Voucher ID</b></td>
 		<td><b>Device count</b></td>
@@ -52,7 +52,7 @@ class admingui
 
 	public function ListUsers($dataset)
 	{
-		echo '<center><table width="80%" border="0">
+		echo '<center><table width="80%" border="0" cellspacing="0">
 		<tr class="tableheader">
 		<td><b>Username</b></td>
 		<td><b>Permissions</b></td>

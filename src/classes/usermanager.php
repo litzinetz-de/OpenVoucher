@@ -20,6 +20,18 @@ class usermanager
 		$dataset=array();
 		while($row=mysql_fetch_array($res))
 		{
+			// Get permissions for this user
+			$perm_res=mysql_query('SELECT permission FROM permissions WHERE username="'.$row['username'].'" ORDER BY permission ASC');
+			$perm='';
+			while($perm_row=mysql_fetch_array($perm_res)) // Build permission list
+			{
+				if($perm!='')
+				{
+					$perm=$perm.', ';
+				}
+				$perm=$perm.$perm_row['permission'];
+			}
+			$row['permission_list']=$perm; // Save permissions to array
 			array_push($dataset,$row);
 		}
 		return $dataset;

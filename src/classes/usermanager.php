@@ -11,7 +11,7 @@ class usermanager
 		$this->mysqlconn=mysql_connect($this->settings['mysql']['host'],$this->settings['mysql']['user'],$this->settings['mysql']['pwd']);
 		mysql_select_db($this->settings['mysql']['db'],$this->mysqlconn);
 		
-		$this->existing_permissions=array('add_vouucher','admin_login','drop_device','drop_voucher','sys_config','view_users','view_voucher','delete_users','edit_permissions');
+		$this->existing_permissions=array('add_voucher','admin_login','drop_device','drop_voucher','sys_config','view_users','view_voucher','delete_users','edit_permissions','add_users');
 	}
 
 	public function GetUserlist()

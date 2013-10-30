@@ -74,7 +74,6 @@ class admingui
 			<td>'.$dataset[$i]['username'].'</td>
 			<td>'.$dataset[$i]['permission_list'].' &gt; <a href="users.php?do=edit_perm&user='.$dataset[$i]['username'].'">Edit permissions</a></td>
 			<td><a href="users.php?do=del&user='.$dataset[$i]['username'].'">Delete user</a></td>
-			</td>
 			</tr>';
 		}
 		echo '</table></center>';

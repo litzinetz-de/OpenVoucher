@@ -21,6 +21,33 @@ if($_GET['do']=='') // If the user requested no specific action, we just display
 
 	echo '<center><b>User list</b></center><br><br>';
 	$agui->ListUsers($u->GetUserlist());
+	
+	if($a->CheckPermission('add_users')) // Show form to add users if the client has permission to do so
+	{
+		echo '<br><br><ul><u>Add User:</u><br>
+		<form action="'.$_SERVER['PHP_SELF'].'?do=add" method="post">
+		Username: <input type="text" name="add_user" size="20" class="formstyle"><br>
+		Password: <input type="password" name="add_pwd" size="20" class="formstyle"><br>
+		Repeat: <input type="password" name="add_repeat" size="20" class="formstyle"><br><br>
+		<input type="submit" value="Add user" class="formstyle">
+		</form></ul>';
+	}
+}
+
+if($_GET['do']=='add') // Requested to delete a user
+{
+	if(!$a->CheckPermission('add_users'))
+	{
+		echo '<center><b>You have no permission to add users.</b></center></body></html>';
+		die();
+	}
+	// Check the entered data
+	if(trim($_POST['add_user'])=='') { die('No user given.'); }
+	if($_POST['add_pwd']!=$_POST['add_repeat']) { die('The passwords do not match.'); }
+	if(trim($_POST['add_pwd'])=='') { die('No password given.'); }
+	
+	$u->AddUser($_POST['add_user'],$_POST['add_pwd']);
+	echo 'The user '.$_GET['add_user'].' has been added.';
 }
 
 if($_GET['do']=='del') // Requested to delete a user

@@ -3,12 +3,15 @@ class usermanager
 {
 	private $settings;
 	private $mysqlconn;
+	private $existing_permissions;
 	
 	function __construct()
 	{
 		$this->settings=parse_ini_file('../.settings.ini',TRUE);
 		$this->mysqlconn=mysql_connect($this->settings['mysql']['host'],$this->settings['mysql']['user'],$this->settings['mysql']['pwd']);
 		mysql_select_db($this->settings['mysql']['db'],$this->mysqlconn);
+		
+		$this->existing_permissions=array('add_vouucher','admin_login','drop_device','drop_voucher','sys_config','view_users','view_voucher');
 	}
 
 	public function GetUserlist()
@@ -47,6 +50,11 @@ class usermanager
 	public function DropPermission($user,$permisssion)
 	{
 		@mysql_query('DELETE FROM permissions WHERE permission="'.$permission.'",user="'.$user.'"',$this->mysqlconn);
+	}
+	
+	public function GetExistingPermissions() // Get all permission levels that exist in OpenVoucher
+	{
+		return $this->existing_permissions;
 	}
 }
 ?>

@@ -25,6 +25,12 @@ if($_GET['do']=='') // If the user requested no specific action, we just display
 
 if($_GET['do']=='del') // Requested to delete a user
 {
+	if(!$a->CheckPermission('delete_users'))
+	{
+		echo '<center><b>You have no permission to delete users.</b></center></body></html>';
+		die();
+	}
+	
 	if($_GET['user']=='') // No user given
 	{
 		echo '<center><b>No user given</b></center>';
@@ -47,6 +53,17 @@ if($_GET['do']=='del') // Requested to delete a user
 
 if($_GET['do']=='edit_perm')
 {
+	if(!$a->CheckPermission('edit_permissions'))
+	{
+		echo '<center><b>You have no permission to edit permissions.</b></center></body></html>';
+		die();
+	}
+	if($_GET['user']==$_SESSION['login']) // The user is not allowed to delete himself
+	{
+		echo '<center><b>You cannot edit yourself. Please use another account to edit yours.</b></center>';
+		die();
+	}
+	
 	if($_GET['user']=='') die('No user given');
 	echo '<center><b>Permissions for user '.$_GET['user'].'</b></center><br><br>
 	<ul>';
@@ -70,12 +87,36 @@ if($_GET['do']=='edit_perm')
 
 if($_GET['do']=='drop_permission')
 {
+	if($_GET['user']==$_SESSION['login']) // The user is not allowed to delete himself
+	{
+		echo '<center><b>You cannot edit yourself. Please use another account to edit yours.</b></center>';
+		die();
+	}
+	
+	if(!$a->CheckPermission('edit_permissions'))
+	{
+		echo '<center><b>You have no permission to edit permissions.</b></center></body></html>';
+		die();
+	}
+	
 	$u->DropPermission($_GET['user'],$_GET['permission']);
 	echo 'Permission &quot;'.$_GET['permission'].'&quot; has been dropped for user &quot;'.$_GET['user'].'&quot;<br><br>
 	<a href="'.$_SERVER['PHP_SELF'].'?do=edit_perm&user='.$_GET['user'].'">Back to user\'s permissions</a>';
 }
 if($_GET['do']=='add_permission')
 {
+	if($_GET['user']==$_SESSION['login']) // The user is not allowed to delete himself
+	{
+		echo '<center><b>You cannot edit yourself. Please use another account to edit yours.</b></center>';
+		die();
+	}
+	
+	if(!$a->CheckPermission('edit_permissions'))
+	{
+		echo '<center><b>You have no permission to edit permissions.</b></center></body></html>';
+		die();
+	}
+	
 	if($_GET['user']=='') die('No user given');
 	if($_GET['permission']=='') die('No permission given');
 	

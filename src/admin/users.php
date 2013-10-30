@@ -57,13 +57,30 @@ if($_GET['do']=='edit_perm')
 	{
 		echo '<li>'.$permission.' <a href="'.$_SERVER['PHP_SELF'].'?do=drop_permission&user='.$_GET['user'].'&permission='.$permission.'">[Drop]</a></li>';
 	}
-	echo '</ul>';
+	echo '</ul><br><br><form action="'.$_SERVER['PHP_SELF'].'" methdo="get">
+	<input type="hidden" name="do" value="add_permission">
+	<input type="hidden" name="user" value="'.$_GET['user'].'">
+	Add permission: <select name="permission" size="1" class="formstyle">';
+	foreach($u->GetExistingPermissions() as $permission)
+	{
+		echo '<option value="'.$permission.'">'.$permission.'</option>';
+	}
+	echo '</select> <input type="submit" value="OK" class="formstyle"></form>';
 }
 
 if($_GET['do']=='drop_permission')
 {
 	$u->DropPermission($_GET['user'],$_GET['permission']);
 	echo 'Permission &quot;'.$_GET['permission'].'&quot; has been dropped for user &quot;'.$_GET['user'].'&quot;<br><br>
+	<a href="'.$_SERVER['PHP_SELF'].'?do=edit_perm&user='.$_GET['user'].'">Back to user\'s permissions</a>';
+}
+if($_GET['do']=='add_permission')
+{
+	if($_GET['user']=='') die('No user given');
+	if($_GET['permission']=='') die('No permission given');
+	
+	$u->AddPermission($_GET['user'],$_GET['permission']);
+	echo 'Permission &quot;'.$_GET['permission'].'&quot; has been added for user &quot;'.$_GET['user'].'&quot;<br><br>
 	<a href="'.$_SERVER['PHP_SELF'].'?do=edit_perm&user='.$_GET['user'].'">Back to user\'s permissions</a>';
 }
 ?>

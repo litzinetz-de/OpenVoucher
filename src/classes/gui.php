@@ -73,7 +73,7 @@ class admingui
 			echo '<tr class="'.$bgclass.'">
 			<td>'.$dataset[$i]['username'].'</td>
 			<td>'.$dataset[$i]['permission_list'].' &gt; <a href="users.php?do=edit_perm&user='.$dataset[$i]['username'].'">Edit permissions</a></td>
-			<td><a href="delete_user.php?user='.$dataset[$i]['username'].'">Delete user</a></td>
+			<td><a href="users.php?do=del&user='.$dataset[$i]['username'].'">Delete user</a></td>
 			</td>
 			</tr>';
 		}

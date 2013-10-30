@@ -26,6 +26,12 @@ class usermanager
 	{
 		@mysql_query('INSERT INTO users (username,pwd) VALUES ("'.$username.'","'.sha1($pwd).'")',$this->mysqlconn);
 	}
+	
+	public function DeleteUser($username)
+	{
+		@mysql_query('DELETE FROM users WHERE username="'.$username.'"');
+		@mysql_query('DELETE FROM permissions WHERE username="'.$username.'"');
+	}
 
 	public function GetPermissionList($user)
 	{

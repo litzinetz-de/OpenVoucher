@@ -2,7 +2,7 @@
 require('../classes/adminauth.php');
 
 $a = new adminauth();
-
+require('../classes/vouchermanager.php');
 require('../classes/gui.php');
 require('../classes/usermanager.php');
 include('../includes/header.php');

@@ -1,5 +1,5 @@
 <?php
-class usermanager()
+class usermanager
 {
 	private $settings;
 	private $mysqlconn;
@@ -14,7 +14,12 @@ class usermanager()
 	public function GetUserlist()
 	{
 		$res=mysql_query('SELECT username FROM users ORDER BY username ASC',$this->mysqlconn);
-		return mysql_fetch_array($res);
+		$dataset=array();
+		while($row=mysql_fetch_array($res))
+		{
+			array_push($dataset,$row);
+		}
+		return $dataset;
 	}
 
 	public function AddUser($username,$pwd)

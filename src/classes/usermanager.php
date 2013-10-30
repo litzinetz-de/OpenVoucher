@@ -39,7 +39,12 @@ class usermanager
 	public function GetPermissionList($user)
 	{
 		$res=mysql_query('SELECT permission FROM permissions WHERE username="'.$user.'"',$this->mysqlconn);
-		return mysql_fetch_array($res);
+		$dataset=array();
+		while($row=mysql_fetch_array($res))
+		{
+			array_push($dataset,$row['permission']);
+		}
+		return $dataset;
 	}
 
 	public function AddPermission($user,$permission)
@@ -47,9 +52,9 @@ class usermanager
 		@mysql_query('INSERT INTO permissions (username,permission) VALUES ("'.$user.'","'.$permission.'")',$this->mysqlconn);
 	}
 	
-	public function DropPermission($user,$permisssion)
+	public function DropPermission($user,$permission)
 	{
-		@mysql_query('DELETE FROM permissions WHERE permission="'.$permission.'",user="'.$user.'"',$this->mysqlconn);
+		@mysql_query('DELETE FROM permissions WHERE permission="'.$permission.'" AND username="'.$user.'"',$this->mysqlconn);
 	}
 	
 	public function GetExistingPermissions() // Get all permission levels that exist in OpenVoucher

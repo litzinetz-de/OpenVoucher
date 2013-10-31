@@ -47,7 +47,7 @@ class printvoucher
 		$this->pdf = new PDF();
 		$this->pdf->AliasNbPages();
 		$this->pdf->AddPage();
-		$this->pdf->SetFont('Arial','',12);
+		$this->pdf->SetFont('Arial','',10);
 		
 		if($vouchertype=='small') // Small vouchers
 		{
@@ -56,19 +56,22 @@ class printvoucher
 			$k=1; // rows
 			for($i=0;$i<count($voucherlist);$i++)
 			{
-				if($j==5)
+				if($j==6)
 				{
-					// line break
-					$j=0;
+					$this->pdf->SetXY(3,$this->pdf->GetY()+20);
+					$j=1;
 					$k++;
 				}
 				if($k==10)
 				{
 					// page break
-					$k=0;
+					$k=1;
 				}
-				$this->pdf->Cell(40,20,'',1);
-				
+				$this->pdf->Cell(40,20,'',1,0);
+				$this->pdf->SetX($this->pdf->GetX()-40);
+				$this->pdf->Cell(40,10,'Voucher ID:',0,2);
+				$this->pdf->Cell(40,10,$voucherlist[$i],0,0);
+				$this->pdf->SetXY($this->pdf->GetX(),$this->pdf->GetY()-10);
 				$j++;
 			}
 		}

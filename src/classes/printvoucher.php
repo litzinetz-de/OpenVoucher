@@ -49,6 +49,30 @@ class printvoucher
 		$this->pdf->AddPage();
 		$this->pdf->SetFont('Arial','',12);
 		
+		if($vouchertype=='small') // Small vouchers
+		{
+			$this->pdf->SetXY(3,30);
+			$j=1; // cols
+			$k=1; // rows
+			for($i=0;$i<count($voucherlist);$i++)
+			{
+				if($j==5)
+				{
+					// line break
+					$j=0;
+					$k++;
+				}
+				if($k==10)
+				{
+					// page break
+					$k=0;
+				}
+				$this->pdf->Cell(40,20,'',1);
+				
+				$j++;
+			}
+		}
+		
 		$this->pdf->Output();
 	}
 }

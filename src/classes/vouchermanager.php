@@ -5,7 +5,26 @@ class vouchermanager {
 	
 	function __construct()
 	{
-		$this->settings=parse_ini_file('../.settings.ini',TRUE);
+		// ------- Configure below
+		// MySQL
+		$this->settings['mysql']['host']='localhost';
+		$this->settings['mysql']['user']='local';
+		$this->settings['mysql']['pwd']='local';
+		$this->settings['mysql']['db']='voucher';
+		
+		// include slash (/) at the end of tmpdir!
+		$this->settings['system']['iptables']='/sbin/iptables';
+		$this->settings['system']['arp']='/usr/sbin/arp';
+		$this->settings['system']['tmpdir']='/var/tmp/';
+		// vailid values are "mac-only", "mac-ipv4", "ipv4-only"
+		$this->settings['system']['authentication']='mac-only';
+		
+		$this->settings['interfaces']['internal']='eth1';
+		$this->settings['interfaces']['internal_ip']='10.0.0.1';
+		$this->settings['interfaces']['external']='eth0';
+		
+		// ------- Configure above
+		
 		$this->mysqlconn=mysql_connect($this->settings['mysql']['host'],$this->settings['mysql']['user'],$this->settings['mysql']['pwd']);
 		mysql_select_db($this->settings['mysql']['db'],$this->mysqlconn);
 	}

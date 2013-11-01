@@ -1,4 +1,4 @@
 # Add this to the crontab of the user running apache (usually www-data on debian).
 # You might have to modify the paths
 # Do NOT run this cronjob by root!
-*/5 * * * * /var/www/localscripts/refresh_permissions.php
+*/5 * * * * php /var/www/localscripts/refresh_permissions.php

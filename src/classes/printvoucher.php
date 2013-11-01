@@ -14,6 +14,7 @@ class PDF extends FPDF
 		$this->Cell(80);
 		// Title
 		$this->Cell(30,10,'OpenVoucher',0,0,'C');
+		$this->Image('../graphics/logo-small.png',180,6,15);
 		// Line
 		$this->Line(0,25,220,25);
 	}
@@ -47,31 +48,35 @@ class printvoucher
 		$this->pdf = new PDF();
 		$this->pdf->AliasNbPages();
 		$this->pdf->AddPage();
-		$this->pdf->SetFont('Arial','',10);
+		$this->pdf->SetAutoPageBreak(false);
+		$this->pdf->SetFont('Arial','',8);
 		
 		if($vouchertype=='small') // Small vouchers
 		{
-			$this->pdf->SetXY(3,30);
-			$j=1; // cols
-			$k=1; // rows
+			$this->pdf->SetXY(4,30);
+			$j=1; // count cols
+			$k=1; // count rows
 			for($i=0;$i<count($voucherlist);$i++)
 			{
 				if($j==6)
 				{
-					$this->pdf->SetXY(3,$this->pdf->GetY()+20);
+					$this->pdf->SetXY(4,$this->pdf->GetY()+20);
 					$j=1;
 					$k++;
 				}
-				if($k==10)
+				if($k==12)
 				{
-					// page break
+					$this->pdf->AddPage();
+					$this->pdf->SetXY(4,30);
 					$k=1;
 				}
 				$this->pdf->Cell(40,20,'',1,0);
 				$this->pdf->SetX($this->pdf->GetX()-40);
-				$this->pdf->Cell(40,10,'Voucher ID:',0,2);
-				$this->pdf->Cell(40,10,$voucherlist[$i],0,0);
-				$this->pdf->SetXY($this->pdf->GetX(),$this->pdf->GetY()-10);
+				$this->pdf->Cell(40,5,'Voucher ID:',0,2,'C');
+				$this->pdf->Cell(40,5,$voucherlist[$i],0,2,'C');
+				$this->pdf->Cell(40,5,'Please enter the code',0,2,'C');
+				$this->pdf->Cell(40,5,'to get internet access',0,0,'C');
+				$this->pdf->SetXY($this->pdf->GetX(),$this->pdf->GetY()-15);
 				$j++;
 			}
 		}

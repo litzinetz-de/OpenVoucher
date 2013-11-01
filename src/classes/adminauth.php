@@ -83,13 +83,20 @@ class adminauth
 	
 	public function CheckPermission($permission) // Check if the logged in user has a specific permission
 	{
-		$res=mysql_query('SELECT COUNT(*) AS cnt FROM permissions WHERE username="'.$_SESSION['login'].'" AND permission="'.$permission.'"',$this->mysqlconn);
+		$res=mysql_query('SELECT COUNT(*) AS cnt FROM permissions WHERE username="'.$_SESSION['login'].'" AND permission="all"',$this->mysqlconn);
 		$row=mysql_fetch_array($res);
 		if($row['cnt']>0)
 		{
 			return true;
 		} else {
-			return false;
+			$res=mysql_query('SELECT COUNT(*) AS cnt FROM permissions WHERE username="'.$_SESSION['login'].'" AND permission="'.$permission.'"',$this->mysqlconn);
+			$row=mysql_fetch_array($res);
+			if($row['cnt']>0)
+			{
+				return true;
+			} else {
+				return false;
+			}
 		}
 	}
 	

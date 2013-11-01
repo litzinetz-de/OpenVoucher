@@ -1,4 +1,6 @@
 <?php
+include('../includes/config.php');
+
 class vouchermanager {
 	private $settings;
 	private $mysqlconn;
@@ -7,21 +9,21 @@ class vouchermanager {
 	{
 		// ------- Configure below
 		// MySQL
-		$this->settings['mysql']['host']='localhost';
-		$this->settings['mysql']['user']='local';
-		$this->settings['mysql']['pwd']='local';
-		$this->settings['mysql']['db']='voucher';
+		$this->settings['mysql']['host']=MYSQL_HOST;
+		$this->settings['mysql']['user']=MYSQL_USER;
+		$this->settings['mysql']['pwd']=MYSQL_PWD;
+		$this->settings['mysql']['db']=MYSQL_DB;
 		
 		// include slash (/) at the end of tmpdir!
-		$this->settings['system']['iptables']='/sbin/iptables';
-		$this->settings['system']['arp']='/usr/sbin/arp';
-		$this->settings['system']['tmpdir']='/var/tmp/';
+		$this->settings['system']['iptables']=SYSTEM_IPTABLES;
+		$this->settings['system']['arp']=SYSTEM_ARP;
+		$this->settings['system']['tmpdir']=SYSTEM_TMPDIR;
 		// vailid values are "mac-only", "mac-ipv4", "ipv4-only"
-		$this->settings['system']['authentication']='mac-only';
+		$this->settings['system']['authentication']=SYSTEM_AUTHENTICATION;
 		
-		$this->settings['interfaces']['internal']='eth1';
-		$this->settings['interfaces']['internal_ip']='10.0.0.1';
-		$this->settings['interfaces']['external']='eth0';
+		$this->settings['interfaces']['internal']=INTERFACES_INTERNAL;
+		$this->settings['interfaces']['internal_ip']=INTERFACES_INTERNAL_IP;
+		$this->settings['interfaces']['external']=INTERFACES_EXTERNAL;
 		
 		// ------- Configure above
 		

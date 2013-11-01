@@ -26,24 +26,23 @@ if((is_numeric($_POST['cnt']) && trim($_POST['cnt'])!='') && ($_POST['d']!=0 || 
 	if(!is_numeric($_POST['dev-cnt'])) $_POST['dev-cnt']=1; // Has the user enterered a numeric value for the device count?
 	
 	$voucher_ids=array();
+	$valid_until=time()+($_POST['d']*86400)+($_POST['h']*3600)+($_POST['m']*60); // Calculate expiration time
 	for($i=1;$i<=$_POST['cnt'];$i++)
 	{
-		$valid_until=time()+($_POST['d']*86400)+($_POST['h']*3600)+($_POST['m']*60); // Calculate expiration time
 		array_push($voucher_ids,$v->MakeVoucher($_POST['dev-cnt'],$valid_until,$_POST['comment']));
-		echo '<center><b>The voucher(s) have been issued.</b></center><br><br>';
-		if($_GET['print']=='y')
-		{
-			$_SESSION['print_voucher_list']=$voucher_ids;
-			echo '<ul><a href="printvouchers.php">Print voucher(s)</a></ul>';
-		}
-		echo 'The folliwing voucher IDs have been issued:<br><ul>';
-		foreach($voucher_ids as $vid)
-		{
-			echo '<li>'.$vid.'</li>';
-		}
-		echo '</ul>';
 	}
-	print_r($voucher_ids);
+	echo '<center><b>The voucher(s) have been issued.</b></center><br><br>';
+	if($_POST['print']=='y')
+	{
+		$_SESSION['print_voucher_list']=$voucher_ids;
+		echo '<ul><a href="printvouchers.php">Print voucher(s)</a></ul>';
+	}
+	echo 'The following voucher IDs have been issued:<br><ul>';
+	foreach($voucher_ids as $vid)
+	{
+		echo '<li>'.$vid.'</li>';
+	}
+	echo '</ul>';
 } else {
 	echo '<form action="addvoucher.php" method="post" name="voucherform">
 	How many vouchers do you want to create?<br>

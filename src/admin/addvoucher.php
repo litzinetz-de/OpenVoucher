@@ -3,12 +3,12 @@ require('../classes/adminauth.php');
 
 $a = new adminauth();
 
-if(!$a->CheckPermission('drop_voucher'))
+if(!$a->CheckPermission('add_voucher'))
 {
 	require('../classes/gui.php');
 	include('../includes/header.php');
 	include('menu.php');
-	echo '<center><b>You have no permission to drop devices.</b></center></body></html>';
+	echo '<center><b>You have no permission to add vouchers.</b></center></body></html>';
 	die();
 }
 

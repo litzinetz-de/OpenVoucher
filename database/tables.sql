@@ -35,3 +35,7 @@ CREATE TABLE IF NOT EXISTS `vouchers` (
   `comment` varchar(255) NOT NULL,
   PRIMARY KEY (`voucher_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- add an admin user
+INSERT INTO users (username,pwd) VALUES ('admin',SHA1('admin'));
+INSERT INTO permissions (username,permission) VALUES ('admin','all');

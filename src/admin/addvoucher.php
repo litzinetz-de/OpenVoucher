@@ -35,7 +35,7 @@ if((is_numeric($_POST['cnt']) && trim($_POST['cnt'])!='') && ($_POST['d']!=0 || 
 	if($_POST['print']=='y')
 	{
 		$_SESSION['print_voucher_list']=$voucher_ids;
-		echo '<ul><a href="printvouchers.php">Print voucher(s)</a></ul>';
+		echo '<ul><a href="printvouchers.php" target="_blank">Print voucher(s)</a></ul>';
 	}
 	echo 'The following voucher IDs have been issued:<br><ul>';
 	foreach($voucher_ids as $vid)

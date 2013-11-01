@@ -1,4 +1,5 @@
 <?php
+include('../includes/config.php');
 class usermanager
 {
 	private $settings;
@@ -7,9 +8,8 @@ class usermanager
 	
 	function __construct()
 	{
-		$this->settings=parse_ini_file('../.settings.ini',TRUE);
-		$this->mysqlconn=mysql_connect($this->settings['mysql']['host'],$this->settings['mysql']['user'],$this->settings['mysql']['pwd']);
-		mysql_select_db($this->settings['mysql']['db'],$this->mysqlconn);
+		$this->mysqlconn=mysql_connect(MYSQL_HOST,MYSQL_USER,MYSQL_PWD);
+		mysql_select_db(MYSQL_DB,$this->mysqlconn);
 		
 		$this->existing_permissions=array('all','add_voucher','admin_login','drop_device','drop_voucher','sys_config','view_users','view_voucher','delete_users','edit_permissions','add_users');
 	}

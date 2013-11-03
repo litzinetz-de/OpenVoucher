@@ -1,6 +1,6 @@
 OpenVoucher is an open source voucher-system for authenticating guests in your wifi or cable network. It is designed to be easy to use for anyone who wants to issue vouchers.
 
-For further information and installation how to's, thee the project's homepage:
+For further information and installation how to's, see the project's homepage:
 
 http://www.openvoucher.org/
 

@@ -1,4 +1,5 @@
 <?php
+include('../includes/config.php');
 class adminauth
 {
 	private $auth_ok;
@@ -12,9 +13,8 @@ class adminauth
 		$this->auth_ok=true;
 		session_start();
 		
-		$this->settings=parse_ini_file('../.settings.ini',TRUE);
-		$this->mysqlconn=mysql_connect($this->settings['mysql']['host'],$this->settings['mysql']['user'],$this->settings['mysql']['pwd']);
-		mysql_select_db($this->settings['mysql']['db'],$this->mysqlconn);
+		$this->mysqlconn=mysql_connect(MYSQL_HOST,MYSQL_USER,MYSQL_PWD);
+		mysql_select_db(MYSQL_DB,$this->mysqlconn);
 		
 		if(trim($_POST['user'])!='' && trim($_POST['pwd'])!='') // Got credentials from form - new user
 		{

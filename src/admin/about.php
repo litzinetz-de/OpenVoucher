@@ -26,6 +26,11 @@ Copyright (C) '.$vers->GetReleaseYear().'  Daniel Litzbach (litzi0815) and other
     along with this program.  If not, see <a href="http://www.gnu.org/licenses/" target="_blank">http://www.gnu.org/licenses/</a>.
 	<br><br>
 	The OpenVoucher logo is based on the work by <a href="http://commons.wikimedia.org/wiki/User:RRZEicons" target="_blank">RRZEicons</a>.';
+	
+	if($vers->UpdateAvailable())
+	{
+		echo '<br><br><b>An update is available. You can run the installer to update</b>';
+	}
 ?>
 </body>
 </html>

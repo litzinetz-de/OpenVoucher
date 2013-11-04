@@ -1,3 +1,6 @@
+CREATE DATABASE IF NOT EXISTS openvoucher;
+USE openvoucher;
+
 DROP TABLE IF EXISTS `devices`;
 CREATE TABLE IF NOT EXISTS `devices` (
   `type` varchar(10) NOT NULL,

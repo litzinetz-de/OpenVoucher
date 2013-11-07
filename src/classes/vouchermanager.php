@@ -250,15 +250,17 @@ class vouchermanager {
 	// Is the requesting client authenticated?
 	public function ClientAuthenticated()
 	{
-		$mac=$this->GetClientMAC();
-		if($mac!='')
+		if($this->settings['system']['authentication']=='mac-only')
 		{
+			$addr=$this->GetClientMAC();
 			$type='mac';
-			$addr=$mac;
-		} else {
-			$type='ipv4';
-			$addr=$this->GetClientIP();
 		}
+		elseif($this->settings['system']['authentication']=='ipv4-only')
+		{
+			$addr=$this->GetClientIP();
+			$type='ipv4';
+		}
+		
 		$res=mysql_query('SELECT voucher_id FROM devices WHERE type="'.$type.'" AND addr="'.$addr.'"',$this->mysqlconn);
 		$row=mysql_fetch_array($res);
 		if(trim($row['voucher_id'])!='')

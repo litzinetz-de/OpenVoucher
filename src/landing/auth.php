@@ -22,9 +22,14 @@ if($authtype=='mac-only')
 } elseif($authtype=='mac-ipv4')
 {
 	// MAC and IP4v fallback
-} elseif($authtype=='ipv4')
+} elseif($authtype=='ipv4-only')
 {
 	// IPv4 only
+	$res=$v->AuthDevice($_POST['vid'],'ipv4',$_SERVER['REMOTE_ADDR']);
+	if($res!='ok')
+	{
+		$auth_error=$res;
+	}
 } else {
 	$auth_error='no-auth-method';
 }

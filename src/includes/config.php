@@ -2,7 +2,7 @@
 define('MYSQL_HOST','localhost');
 define('MYSQL_USER','local');
 define('MYSQL_PWD','local');
-define('MYSQL_DB','voucher');
+define('MYSQL_DB','openvoucher');
 
 define('SYSTEM_IPTABLES','/sbin/iptables');
 define('SYSTEM_ARP','/usr/sbin/arp');

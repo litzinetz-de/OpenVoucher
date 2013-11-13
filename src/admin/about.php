@@ -29,7 +29,8 @@ Copyright (C) '.$vers->GetReleaseYear().'  Daniel Litzbach (litzi0815) and other
 	
 	if($vers->UpdateAvailable())
 	{
-		echo '<br><br><b>An update is available. You can run the installer to update</b>';
+		echo '<br><br><b>An update is available. The newest version is '.$vers->NewestVersion().', you are currently running '.$vers->GetCurrentVersion().'<br>Please check <a href="http://www.openvoucher.org/" target="_blank">www.openvoucher.org</a> for 
+		update instructions.</b>';
 	}
 ?>
 </body>

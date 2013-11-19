@@ -1,0 +1,2 @@
+USE openvoucher;
+CREATE TABLE settings (setting INT NOT NULL AUTO_INCREMENT PRIMARY KEY,value VARCHAR(255));

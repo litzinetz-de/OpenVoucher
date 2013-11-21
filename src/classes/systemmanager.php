@@ -10,7 +10,8 @@ class systemmanager
 	{
 		$this->defaults['vouchertext1']='Please enter the code';
 		$this->defaults['vouchertext2']='to get internet access';
-		
+		$this->defaults['pre-form-text']='Please add your voucher code in the form below to get internet access.';
+		$this->defaults['post-form-text']='Feel free to contact an administrator if you have any problems.';
 		
 		$this->mysqlconn=mysql_connect(MYSQL_HOST,MYSQL_USER,MYSQL_PWD);
 		mysql_select_db(MYSQL_DB,$this->mysqlconn);

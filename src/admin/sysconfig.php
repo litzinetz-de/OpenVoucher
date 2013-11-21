@@ -30,11 +30,17 @@ echo '<table border="0" cellspacing="0">
 <tr>
 <form action="'.$_SERVER['PHP_SELF'].'?do=update" method="post">
 <td valign="top" width="20%">Voucher information text 1:<br>
-<small>First line of info text shown in the voucher</small>
+<small>First line of info text shown in the voucher. Type a space for empty text.</small>
 </td><td><input type="text" class="formstyle" name="vouchertext1" size="20" value="'.$s->GetSetting('vouchertext1').'"></td></tr>
 <td valign="top">Voucher information text 2:<br>
-<small>Second line of info text shown in the voucher</small>
+<small>Second line of info text shown in the voucher. Type a space for empty text.</small>
 </td><td><input type="text" class="formstyle" name="vouchertext2" size="20" value="'.$s->GetSetting('vouchertext2').'"></td></tr>
+<td valign="top">Pre-form text:<br>
+<small>This text is shown on the landing page above the form. Type a space for empty text.</small>
+</td><td><input type="text" class="formstyle" name="pre-form-text" size="20" value="'.$s->GetSetting('pre-form-text').'"></td></tr>
+<td valign="top">Post-form text:<br>
+<small>This text is shown on the landing page below the form. Type a space for empty text.</small>
+</td><td><input type="text" class="formstyle" name="post-form-text" size="20" value="'.$s->GetSetting('post-form-text').'"></td></tr>
 
 </table>
 <br>

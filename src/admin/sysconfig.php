@@ -28,7 +28,16 @@ if($_GET['do']=='update')
 	$s->SetSetting('post-form-text',$_POST['post-form-text']);
 }
 
-
+if($_GET['do']=='logo')
+{
+	move_uploaded_file($_FILES['logo']['tmp_name'],'../graphics/'.trim($_FILES['logo']['name']));
+	if(!preg_match("/image/i",$_FILES['logo']['type']))
+	{
+		unlink('../graphics/'.trim($_FILES['logo']['name']));
+		die('The file doesn\'t seem to be a picture.');
+	}
+	$s->SetSetting('logo',trim($_FILES['logo']['name']));
+}
 
 echo '<table border="0" cellspacing="0">
 <tr>
@@ -55,7 +64,7 @@ echo '<table border="0" cellspacing="0">
 Logo:<br>';
 
 $logo=$s->GetSetting('logo');
-if(file_exists($logo) && !is_dir($logo))
+if(file_exists('../graphics/'.$logo) && !is_dir('../graphics/'.$logo))
 {
 	echo '<img src="../graphics/'.$logo.'">';
 } else {

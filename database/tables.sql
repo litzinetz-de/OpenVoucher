@@ -39,6 +39,14 @@ CREATE TABLE IF NOT EXISTS `vouchers` (
   PRIMARY KEY (`voucher_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+-- ---------------------------------------------------------
+
+DROP TABLE IF EXISTS `settings`;
+CREATE TABLE settings (
+	setting VARCHAR(255) NOT NULL PRIMARY KEY,
+	s_value VARCHAR(255) NOT NULL
+	) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 -- add an admin user
 INSERT INTO users (username,pwd) VALUES ('admin',SHA1('admin'));
 INSERT INTO permissions (username,permission) VALUES ('admin','all');

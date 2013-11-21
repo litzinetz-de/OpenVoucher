@@ -28,6 +28,8 @@ if($_GET['do']=='update')
 	$s->SetSetting('post-form-text',$_POST['post-form-text']);
 }
 
+
+
 echo '<table border="0" cellspacing="0">
 <tr>
 <form action="'.$_SERVER['PHP_SELF'].'?do=update" method="post">
@@ -47,4 +49,23 @@ echo '<table border="0" cellspacing="0">
 </table>
 <br>
 <input type="submit" value="Save" class="formstyle">
-</form></body></html>';
+</form>
+
+<br><br>
+Logo:<br>';
+
+$logo=$s->GetSetting('logo');
+if(file_exists($logo) && !is_dir($logo))
+{
+	echo '<img src="../graphics/'.$logo.'">';
+} else {
+	echo '<i>No image defined or not found</i>';
+}
+
+echo '<br><br>
+You can upload a new logo here. This will overwrite your existing logo.<br>
+<form action="'.$_SERVER['PHP_SELF'].'?do=logo" method="post" enctype="multipart/form-data">
+<input type="file" name="logo" class="formstyle"><br><br>
+<input type="submit" value="Upload" class="formstyle">
+</form>
+</body></html>';

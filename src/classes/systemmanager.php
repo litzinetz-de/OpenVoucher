@@ -4,9 +4,14 @@ include('../includes/config.php');
 class systemmanager
 {
 	private $mysqlconn;
+	private $defaults; // This array contains the default values of nothing is configured in mysql database
 	
 	function __construct()
 	{
+		$this->defaults['vouchertext1']='Please enter the code';
+		$this->defaults['vouchertext2']='to get internet access';
+		
+		
 		$this->mysqlconn=mysql_connect(MYSQL_HOST,MYSQL_USER,MYSQL_PWD);
 		mysql_select_db(MYSQL_DB,$this->mysqlconn);
 	}
@@ -15,7 +20,14 @@ class systemmanager
 	{
 		$res=mysql_query('SELECT s_value FROM settings WHERE setting="'.$setting.'"',$this->mysqlconn);
 		$row=mysql_fetch_array($res);
-		return $row['s_value'];
+		$return_value=$row['s_value'];
+		
+		if($return_value=='')
+		{
+			return $this->defaults[$setting];
+		} else {
+			return $return_value;
+		}
 	}
 	
 	public function SetSetting($setting,$value)

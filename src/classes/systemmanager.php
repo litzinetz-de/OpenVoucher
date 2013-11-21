@@ -13,7 +13,7 @@ class systemmanager
 	
 	public function GetSetting($setting)
 	{
-		$res=mysql_query('SELECT value FROM settings WHERE setting="'.$setting.'"',$this->mysqlconn);
+		$res=mysql_query('SELECT s_value FROM settings WHERE setting="'.$setting.'"',$this->mysqlconn);
 		$row=mysql_fetch_array($res);
 		return $row['value'];
 	}
@@ -24,9 +24,9 @@ class systemmanager
 		$row=mysql_fetch_array($res);
 		if($row['cnt']>0)
 		{
-			$query='UPDATE settings SET value="'.$value.'" WHERE setting="'.$setting.'"';
+			$query='UPDATE settings SET s_value="'.$value.'" WHERE setting="'.$setting.'"';
 		} else {
-			$query='INSERT INTO settings (setting,value) VALUES ("'.$setting.'","'.$value.'")';
+			$query='INSERT INTO settings (setting,s_value) VALUES ("'.$setting.'","'.$value.'")';
 		}
 		mysql_query($query,$this->mysqlconn);
 	}

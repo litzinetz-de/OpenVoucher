@@ -15,7 +15,7 @@ class systemmanager
 	{
 		$res=mysql_query('SELECT s_value FROM settings WHERE setting="'.$setting.'"',$this->mysqlconn);
 		$row=mysql_fetch_array($res);
-		return $row['value'];
+		return $row['s_value'];
 	}
 	
 	public function SetSetting($setting,$value)

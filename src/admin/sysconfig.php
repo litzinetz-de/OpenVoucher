@@ -24,6 +24,8 @@ if($_GET['do']=='update')
 {
 	$s->SetSetting('vouchertext1',$_POST['vouchertext1']);
 	$s->SetSetting('vouchertext2',$_POST['vouchertext2']);
+	$s->SetSetting('pre-form-text',$_POST['pre-form-text']);
+	$s->SetSetting('post-form-text',$_POST['post-form-text']);
 }
 
 echo '<table border="0" cellspacing="0">

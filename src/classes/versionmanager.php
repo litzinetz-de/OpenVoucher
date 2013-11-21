@@ -1,5 +1,5 @@
 <?php
-define('CURRENTVER','0.3.2');
+define('CURRENTVER','0.3.3');
 define('RELYEAR',2013);
 
 class versionmanager

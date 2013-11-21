@@ -1,5 +1,6 @@
 <?php
 require('fpdf/fpdf.php');
+require('../classes/systemmanager.php');
 
 class PDF extends FPDF
 {
@@ -36,11 +37,14 @@ class printvoucher
 	private $pdf;
 	private $vouchertype;
 	private $voucherlist;
+	private $s;
 	
 	// vouchertype: small (many vouchers per page) or big (one voucher per page)
 	// voucherlist: array of voucher IDs to print
 	function __construct($vouchertype,$voucherlist)
 	{
+		$this->s = new systemmanager();
+		
 		$this->pdf=new PDF();
 		$this->vouchertype=$vouchertype;
 		$this->voucherlist=$voucherlist;
@@ -74,8 +78,8 @@ class printvoucher
 				$this->pdf->SetX($this->pdf->GetX()-40);
 				$this->pdf->Cell(40,5,'Voucher ID:',0,2,'C');
 				$this->pdf->Cell(40,5,$voucherlist[$i],0,2,'C');
-				$this->pdf->Cell(40,5,'Please enter the code',0,2,'C');
-				$this->pdf->Cell(40,5,'to get internet access',0,0,'C');
+				$this->pdf->Cell(40,5,$this->s->GetSetting('vouchertext1'),0,2,'C');
+				$this->pdf->Cell(40,5,$this->s->GetSetting('vouchertext2'),0,0,'C');
 				$this->pdf->SetXY($this->pdf->GetX(),$this->pdf->GetY()-15);
 				$j++;
 			}

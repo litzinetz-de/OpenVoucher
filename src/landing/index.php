@@ -1,5 +1,4 @@
 <?php
-include('../includes/header.php');
 require('../classes/vouchermanager.php');
 require('../classes/systemmanager.php');
 
@@ -7,6 +6,8 @@ $v = new vouchermanager();
 $clientdata=$v->ClientAuthenticated();
 
 $s = new systemmanager();
+
+require('../includes/header.php'); // Must be included after creating instance of systemmanager
 
 if($clientdata!='noauth')
 {

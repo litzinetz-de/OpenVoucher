@@ -11,7 +11,7 @@ if($authtype=='mac-only')
 	$mac=$v->GetClientMAC();
 	if($mac!='')
 	{
-		$res=$v->AuthDevice($_POST['vid'],'mac',$mac);
+		$res=$v->AuthDevice($_POST['vid'],$_POST['verification_key'],'mac',$mac);
 		if($res!='ok')
 		{
 			$auth_error=$res;
@@ -25,7 +25,7 @@ if($authtype=='mac-only')
 } elseif($authtype=='ipv4-only')
 {
 	// IPv4 only
-	$res=$v->AuthDevice($_POST['vid'],'ipv4',$_SERVER['REMOTE_ADDR']);
+	$res=$v->AuthDevice($_POST['vid'],$_POST['verification_key'],'ipv4',$_SERVER['REMOTE_ADDR']);
 	if($res!='ok')
 	{
 		$auth_error=$res;
@@ -46,6 +46,7 @@ if($auth_error!='')
 	if($auth_error=='maxnumber-reached') { echo 'You are not allowed to use more devices with this voucher. You can <a href="drop.php">drop</a> the internet access for a device that you don\'t need 
 	anymore, then try again.'; }
 	if($auth_error=='db-error') { echo 'We have a database error. Please contact an administrator.'; }
+	if($auth_error=='verification-failed') { echo 'The verification of your voucher failed. Please check your verification key.'; }
 } else {
 	header('Location: index.php');
 }

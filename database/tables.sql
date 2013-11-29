@@ -50,3 +50,8 @@ CREATE TABLE settings (
 -- add an admin user
 INSERT INTO users (username,pwd) VALUES ('admin',SHA1('admin'));
 INSERT INTO permissions (username,permission) VALUES ('admin','all');
+
+-- default config
+INSERT INTO settings (setting,s_value) VALUES ('vouchertext1','Please enter the code');
+INSERT INTO settings (setting,s_value) VALUES ('vouchertext2','to get internet access');
+INSERT INTO settings (setting,s_value) VALUES ('use_verification','n');

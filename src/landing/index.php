@@ -21,7 +21,14 @@ if($clientdata!='noauth')
 } else {
 	echo $s->GetSetting('pre-form-text').'<br><br>
 	<form action="auth.php" method="post">
-	Voucher code: <input type="text" name="vid" size="20" class="formstyle"><br><br>
+	Voucher code: <input type="text" name="vid" size="20" class="formstyle">';
+	
+	if($s->GetSetting('use_verification')=='y')
+	{
+		echo '<br>Verification key: <input type="text" name="verification_key" size="20" class="formstyle">';
+	}
+	
+	echo '<br><br>
 	<input type="submit" value="OK" class="formstyle">
 	</form><br><br>'.$s->GetSetting('post-form-text');
 }

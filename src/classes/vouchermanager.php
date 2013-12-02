@@ -56,6 +56,11 @@ class vouchermanager {
 		return $vid;
 	}
 	
+	private function GetNewVerificationKey()
+	{
+		return rand(111111,999999);
+	}
+	
 	public function GetClientMAC($ipAddress='')
 	{
 		if($ipAddress=='')
@@ -143,7 +148,15 @@ class vouchermanager {
 	public function MakeVoucher($devicecount,$valid_until,$comment)
 	{
 		$vid=$this->GetNewVoucherID();
-		if(mysql_query('INSERT INTO vouchers VALUES ("'.$vid.'",'.$devicecount.','.$valid_until.',"'.$comment.'")',$this->mysqlconn))
+		
+		if($this->sysconfig->GetSetting('use_verification')=='y')
+		{
+			$verification_key=$this->GetNewVerificationKey();
+		} else {
+			$verification_key='';
+		}
+		
+		if(mysql_query('INSERT INTO vouchers (voucher_id,dev_count,valid_until,verification_key,comment) VALUES ("'.$vid.'",'.$devicecount.','.$valid_until.',"'.$verification_key.'","'.$comment.'")',$this->mysqlconn))
 		{
 			return $vid;
 		} else {

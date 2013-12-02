@@ -8,8 +8,14 @@ class adminauth
 	private $settings;
 	private $mysqlconn;
 	
-	function __construct()
+	function __construct($mode='gui') // TODO: Get session id from parameter if it's an api connection
 	{
+		if($mode=='api')
+		{
+			ini_set("session.use_cookies",0);
+			ini_set("session.use_trans_sid",1);
+			session_id($_GET['session_id']);
+		}
 		$this->auth_ok=true;
 		session_start();
 		
@@ -46,29 +52,49 @@ class adminauth
 		
 		if($this->auth_ok) // so far so good...
 		{
-			// ...but is the user allowed to log in via admin panel?
+			// ...but is the user allowed to log in via admin panel / api?
+			if($mode=='api')
+			{
+				$this->auth_ok=$this->CheckPermission('api_login');
+			} else {
 			$this->auth_ok=$this->CheckPermission('admin_login');
+			}
 		}
 		
 		// If auth_ok has not been set to false until this point, the user is authenticated
 		
 		if(!$this->auth_ok)
-		{
-			include('../includes/header.php');
-			echo '<center><b>Please login</b></center>
-			<tr>
-			<form action="'.$_SERVER['PHP_SELF'].'" method="post">
-			<table border="0">
-			<td>Username:</td>
-			<td><input type="text" name="user" value="'.$_COOKIE['LastUsername'].'" class="formstyle"></td>
-			</tr><tr>
-			<td>Password:</td>
-			<td><input type="password" name="pwd" class="formstyle">
-			</td></tr></table>
-			<br><input type="submit" value="Login" class="formstyle"></form>
-			</body>
-			</html>';
+		{			
+			if($mode=='api')
+			{
+				echo '<authentication>
+				<state>failed</state>
+				</authentication>';
+			} else {
+				include('../includes/header.php');
+				echo '<center><b>Please login</b></center>
+				<tr>
+				<form action="'.$_SERVER['PHP_SELF'].'" method="post">
+				<table border="0">
+				<td>Username:</td>
+				<td><input type="text" name="user" value="'.$_COOKIE['LastUsername'].'" class="formstyle"></td>
+				</tr><tr>
+				<td>Password:</td>
+				<td><input type="password" name="pwd" class="formstyle">
+				</td></tr></table>
+				<br><input type="submit" value="Login" class="formstyle"></form>
+				</body>
+				</html>';
+			}
 			die();
+		}
+		
+		if($mode=='api')
+		{
+			echo '<authentication>
+			<state>success</state>
+			<session>'.session_id().'</session>
+			</authentication>';
 		}
 		
 	}

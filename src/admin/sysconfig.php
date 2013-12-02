@@ -26,6 +26,13 @@ if($_GET['do']=='update')
 	$s->SetSetting('vouchertext2',$_POST['vouchertext2']);
 	$s->SetSetting('pre-form-text',$_POST['pre-form-text']);
 	$s->SetSetting('post-form-text',$_POST['post-form-text']);
+	
+	if($_POST['use_verification']=='y')
+	{
+		$s->SetSetting('use_verification','y');
+	} else {
+		$s->SetSetting('use_verification','n');
+	}
 }
 
 if($_GET['do']=='logo')
@@ -54,7 +61,16 @@ echo '<table border="0" cellspacing="0">
 <td valign="top">Post-form text:<br>
 <small>This text is shown on the landing page below the form. Type a space for empty text.</small>
 </td><td><input type="text" class="formstyle" name="post-form-text" size="20" value="'.$s->GetSetting('post-form-text').'"></td></tr>
+<tr><td>Use verification keys:</td>';
 
+if($s->GetSetting('use_verification')=='y')
+{
+	$veri_checked=' checked';
+} else {
+	$veri_checked='';
+}
+
+echo '<td><input type="checkbox" name="use_verification" value="y"'.$veri_checked.'></td></tr>
 </table>
 <br>
 <input type="submit" value="Save" class="formstyle">

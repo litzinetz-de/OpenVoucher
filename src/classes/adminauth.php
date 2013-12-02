@@ -7,9 +7,11 @@ class adminauth
 	private $auth_pwd;
 	private $settings;
 	private $mysqlconn;
+	private $mode;
 	
 	function __construct($mode='gui') // TODO: Get session id from parameter if it's an api connection
 	{
+		$this->mode=$mode;
 		if($mode=='api')
 		{
 			ini_set("session.use_cookies",0);
@@ -68,8 +70,8 @@ class adminauth
 			if($mode=='api')
 			{
 				echo '<authentication>
-				<state>failed</state>
-				</authentication>';
+<state>failed</state>
+</authentication>';
 			} else {
 				include('../includes/header.php');
 				echo '<center><b>Please login</b></center>
@@ -104,7 +106,17 @@ class adminauth
 		session_start();
 		$_SESSION = array();
 		session_destroy();
-		header('Location: index.php');
+		if($this->mode=='gui')
+		{
+			header('Location: index.php');
+		}
+		if($this->mode=='api')
+		{
+			echo '<action>
+<job>logout</job>
+<state>success</state>
+</action>';
+		}
 	}
 	
 	public function CheckPermission($permission) // Check if the logged in user has a specific permission

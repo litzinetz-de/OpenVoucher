@@ -46,6 +46,16 @@ if($_GET['do']=='logo')
 	$s->SetSetting('logo',trim($_FILES['logo']['name']));
 }
 
+if($_GET['do']=='del_logo')
+{
+	$logo=$s->GetSetting('logo');
+	if(file_exists('../graphics/'.$logo) && !is_dir('../graphics/'.$logo))
+	{
+		@unlink('../graphics/'.$logo);
+		$s->SetSetting('logo','');
+	}
+}
+
 echo '<table border="0" cellspacing="0">
 <tr>
 <form action="'.$_SERVER['PHP_SELF'].'?do=update" method="post">
@@ -82,7 +92,7 @@ Logo:<br>';
 $logo=$s->GetSetting('logo');
 if(file_exists('../graphics/'.$logo) && !is_dir('../graphics/'.$logo))
 {
-	echo '<img src="../graphics/'.$logo.'">';
+	echo '<img src="../graphics/'.$logo.'"><br><a href="'.$_SERVER['PHP_SELF'].'?do=del_logo">[Delete]</a>';
 } else {
 	echo '<i>No image defined or not found</i>';
 }

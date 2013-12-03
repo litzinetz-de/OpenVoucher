@@ -41,4 +41,17 @@ if($_GET['do']=='lst-vouchers')
 	}
 	echo '</voucherlist>';
 }
+
+if($_GET['do']=='dropvoucher')
+{
+	echo '<action>'."\n\t".'<job>dropvoucher</job>'."\n\t<state>";
+	if(trim($_GET['vid'])=='')
+	{
+		echo 'failed';
+	} else {
+		echo 'success';
+		$vouchermanager->DropVoucher($_GET['vid'],true);
+	}
+	echo '</state>'."\n".'</action>';
+}
 ?>

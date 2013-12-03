@@ -94,9 +94,10 @@ class adminauth
 		if($mode=='api')
 		{
 			echo '<authentication>
-			<state>success</state>
-			<session>'.session_id().'</session>
-			</authentication>';
+	<state>success</state>
+	<session>'.session_id().'</session>
+</authentication>';
+			echo "\n";
 		}
 		
 	}
@@ -113,9 +114,10 @@ class adminauth
 		if($this->mode=='api')
 		{
 			echo '<action>
-<job>logout</job>
-<state>success</state>
+	<job>logout</job>
+	<state>success</state>
 </action>';
+			echo "\n";
 		}
 	}
 	

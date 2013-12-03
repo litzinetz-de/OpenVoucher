@@ -1,9 +1,11 @@
 <?php
-include('../includes/config.php');
+require_once('../includes/config.php');
+require_once('../classes/systemmanager.php');
 
 class vouchermanager {
 	private $settings;
 	private $mysqlconn;
+	private $sysconfig;
 	
 	function __construct()
 	{
@@ -29,6 +31,8 @@ class vouchermanager {
 		
 		$this->mysqlconn=mysql_connect($this->settings['mysql']['host'],$this->settings['mysql']['user'],$this->settings['mysql']['pwd']);
 		mysql_select_db($this->settings['mysql']['db'],$this->mysqlconn);
+		
+		$this->sysconfig = new systemmanager();
 	}
 	
 	private function VoucherIDExists($vid)
@@ -50,6 +54,11 @@ class vouchermanager {
 			$vid=date('Y-m-d',time()).'-'.rand(111111,999999);
 		} while($this->VoucherIDExists($vid));
 		return $vid;
+	}
+	
+	private function GetNewVerificationKey()
+	{
+		return rand(111111,999999);
 	}
 	
 	public function GetClientMAC($ipAddress='')
@@ -139,7 +148,15 @@ class vouchermanager {
 	public function MakeVoucher($devicecount,$valid_until,$comment)
 	{
 		$vid=$this->GetNewVoucherID();
-		if(mysql_query('INSERT INTO vouchers VALUES ("'.$vid.'",'.$devicecount.','.$valid_until.',"'.$comment.'")',$this->mysqlconn))
+		
+		if($this->sysconfig->GetSetting('use_verification')=='y')
+		{
+			$verification_key=$this->GetNewVerificationKey();
+		} else {
+			$verification_key='';
+		}
+		
+		if(mysql_query('INSERT INTO vouchers (voucher_id,dev_count,valid_until,verification_key,comment) VALUES ("'.$vid.'",'.$devicecount.','.$valid_until.',"'.$verification_key.'","'.$comment.'")',$this->mysqlconn))
 		{
 			return $vid;
 		} else {
@@ -180,11 +197,20 @@ class vouchermanager {
 		return $this->settings['system']['authentication'];
 	}
 	
-	public function AuthDevice($vid,$type,$addr)
+	public function AuthDevice($vid,$verification_key,$type,$addr)
 	{
 		// Voucher valid?
-		$res=mysql_query('SELECT dev_count,valid_until FROM vouchers WHERE voucher_id="'.$vid.'"',$this->mysqlconn);
+		$res=mysql_query('SELECT dev_count,valid_until,verification_key FROM vouchers WHERE voucher_id="'.$vid.'"',$this->mysqlconn);
 		$row=mysql_fetch_array($res);
+		
+		if($this->sysconfig->GetSetting('use_verification')=='y')
+		{
+			if($verification_key != $row['verification_key'])
+			{
+				return 'verification-failed';
+			}
+		}
+		
 		if(trim($row['valid_until'])=='' || $row['valid_until']<=time()) // Voucher not found or exceeded
 		{
 			return 'not-found-exceeded';
@@ -288,7 +314,7 @@ class vouchermanager {
 	public function GetVoucherList($searchstring='')
 	{
 		$dataset=array();
-		$res=mysql_query('SELECT voucher_id,dev_count,valid_until,comment FROM vouchers '.$searchstring);
+		$res=mysql_query('SELECT voucher_id,verification_key,dev_count,valid_until,comment FROM vouchers '.$searchstring);
 		while($row=mysql_fetch_array($res))
 		{
 			array_push($dataset,$row);

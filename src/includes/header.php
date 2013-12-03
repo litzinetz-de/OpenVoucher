@@ -2,6 +2,9 @@
 if(!class_exists('systemmanager'))
 {
 	require('../classes/systemmanager.php');
+}
+if(!isset($s))
+{
 	$s = new systemmanager();
 }
 $logo=$s->GetSetting('logo');

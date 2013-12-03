@@ -9,9 +9,10 @@ class admingui
 	}
 	public function ListVouchers($dataset)
 	{
-		echo '<center><table width="80%" border="0" cellspacing="0">
+		echo '<center><table width="100%" border="0" cellspacing="0">
 		<tr class="tableheader">
 		<td><b>Voucher ID</b></td>
+		<td><b>Verification key</b></td>
 		<td><b>Device count</b></td>
 		<td><b>Valid until</b></td>
 		<td><b>Comment</b></td>
@@ -32,6 +33,7 @@ class admingui
 			}
 			echo '<tr class="'.$bgclass.'">
 			<td>'.$dataset[$i]['voucher_id'].'</td>
+			<td>'.$dataset[$i]['verification_key'].'</td>
 			<td>'.$dataset[$i]['dev_count'].'</td>
 			<td>'.date('Y-m-d H:i',$dataset[$i]['valid_until']).'</td>
 			<td>'.$dataset[$i]['comment'].'&nbsp;</td>

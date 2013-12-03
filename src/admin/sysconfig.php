@@ -26,6 +26,13 @@ if($_GET['do']=='update')
 	$s->SetSetting('vouchertext2',$_POST['vouchertext2']);
 	$s->SetSetting('pre-form-text',$_POST['pre-form-text']);
 	$s->SetSetting('post-form-text',$_POST['post-form-text']);
+	
+	if($_POST['use_verification']=='y')
+	{
+		$s->SetSetting('use_verification','y');
+	} else {
+		$s->SetSetting('use_verification','n');
+	}
 }
 
 if($_GET['do']=='logo')
@@ -37,6 +44,16 @@ if($_GET['do']=='logo')
 		die('The file doesn\'t seem to be a picture.');
 	}
 	$s->SetSetting('logo',trim($_FILES['logo']['name']));
+}
+
+if($_GET['do']=='del_logo')
+{
+	$logo=$s->GetSetting('logo');
+	if(file_exists('../graphics/'.$logo) && !is_dir('../graphics/'.$logo))
+	{
+		@unlink('../graphics/'.$logo);
+		$s->SetSetting('logo','');
+	}
 }
 
 echo '<table border="0" cellspacing="0">
@@ -54,7 +71,16 @@ echo '<table border="0" cellspacing="0">
 <td valign="top">Post-form text:<br>
 <small>This text is shown on the landing page below the form. Type a space for empty text.</small>
 </td><td><input type="text" class="formstyle" name="post-form-text" size="20" value="'.$s->GetSetting('post-form-text').'"></td></tr>
+<tr><td>Use verification keys:</td>';
 
+if($s->GetSetting('use_verification')=='y')
+{
+	$veri_checked=' checked';
+} else {
+	$veri_checked='';
+}
+
+echo '<td><input type="checkbox" name="use_verification" value="y"'.$veri_checked.'></td></tr>
 </table>
 <br>
 <input type="submit" value="Save" class="formstyle">
@@ -66,7 +92,7 @@ Logo:<br>';
 $logo=$s->GetSetting('logo');
 if(file_exists('../graphics/'.$logo) && !is_dir('../graphics/'.$logo))
 {
-	echo '<img src="../graphics/'.$logo.'">';
+	echo '<img src="../graphics/'.$logo.'"><br><a href="'.$_SERVER['PHP_SELF'].'?do=del_logo">[Delete]</a>';
 } else {
 	echo '<i>No image defined or not found</i>';
 }

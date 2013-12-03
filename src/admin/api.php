@@ -54,4 +54,17 @@ if($_GET['do']=='dropvoucher')
 	}
 	echo '</state>'."\n".'</action>';
 }
+
+if($_GET['do']=='dropdevice')
+{
+	echo '<action>'."\n\t".'<job>dropdevice</job>'."\n\t<state>";
+	if(trim($_GET['type'])=='' || trim($_GET['addr'])=='')
+	{
+		echo 'failed';
+	} else {
+		echo 'success';
+		$vouchermanager->DropDevice($_GET['type'],$_GET['addr']);
+	}
+	echo '</state>'."\n".'</action>';
+}
 ?>

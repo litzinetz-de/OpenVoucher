@@ -1,7 +1,4 @@
 <?php
-echo '<?xml version="1.0" encoding="UTF-8"?>';
-echo "\n";
-
 require('../classes/adminauth.php');
 require('../classes/systemmanager.php');
 require('../classes/usermanager.php');
@@ -71,7 +68,7 @@ if($_GET['do']=='addvoucher')
 {
 	echo '<action>'."\n\t".'<job>addvoucher</job>'."\n\t<state>";
 	
-	if(!isset($_GET['devicecount']) || !is_numeric($_GET['devicecount') || !isset($_GET['valid_until']) || !is_numeric($_GET['valid_until']))
+	if(!isset($_GET['devicecount']) || !is_numeric($_GET['devicecount']) || !isset($_GET['valid_until']) || !is_numeric($_GET['valid_until']))
 	{
 		echo 'failed</state>';
 	} else {
@@ -83,6 +80,6 @@ if($_GET['do']=='addvoucher')
 			echo 'success</state>'."\n\t".'<vid>'.$vid.'</vid>';
 		}
 	}
-	echo '</action>';
+	echo "\n".'</action>';
 }
 ?>

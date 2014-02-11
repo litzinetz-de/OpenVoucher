@@ -27,7 +27,7 @@ if($_GET['do']=='lst-vouchers')
 		{
 			echo "\t\t".'<voucher>
 			<vid>'.$vouchers[$i]['voucher_id'].'</vid>
-			<verification>'.$vouchers[$i]['verification'].'</verification>
+			<verification>'.$vouchers[$i]['verification_key'].'</verification>
 			<devcount>'.$vouchers[$i]['dev_count'].'</devcount>
 			<validuntil>'.$vouchers[$i]['valid_until'].'</validuntil>
 			<comment>'.$vouchers[$i]['comment'].'</comment>

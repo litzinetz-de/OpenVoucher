@@ -9,25 +9,21 @@ class vouchermanager {
 	
 	function __construct()
 	{
-		// ------- Configure below
-		// MySQL
+		// Configs are read from config.php - No need to change anything here !!
 		$this->settings['mysql']['host']=MYSQL_HOST;
 		$this->settings['mysql']['user']=MYSQL_USER;
 		$this->settings['mysql']['pwd']=MYSQL_PWD;
 		$this->settings['mysql']['db']=MYSQL_DB;
 		
-		// include slash (/) at the end of tmpdir!
 		$this->settings['system']['iptables']=SYSTEM_IPTABLES;
 		$this->settings['system']['arp']=SYSTEM_ARP;
 		$this->settings['system']['tmpdir']=SYSTEM_TMPDIR;
-		// vailid values are "mac-only", "mac-ipv4", "ipv4-only"
+
 		$this->settings['system']['authentication']=SYSTEM_AUTHENTICATION;
 		
 		$this->settings['interfaces']['internal']=INTERFACES_INTERNAL;
 		$this->settings['interfaces']['internal_ip']=INTERFACES_INTERNAL_IP;
 		$this->settings['interfaces']['external']=INTERFACES_EXTERNAL;
-		
-		// ------- Configure above
 		
 		$this->mysqlconn=mysql_connect($this->settings['mysql']['host'],$this->settings['mysql']['user'],$this->settings['mysql']['pwd']);
 		mysql_select_db($this->settings['mysql']['db'],$this->mysqlconn);

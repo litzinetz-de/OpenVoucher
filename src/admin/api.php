@@ -67,4 +67,22 @@ if($_GET['do']=='dropdevice')
 	}
 	echo '</state>'."\n".'</action>';
 }
+if($_GET['do']=='addvoucher')
+{
+	echo '<action>'."\n\t".'<job>addvoucher</job>'."\n\t<state>";
+	
+	if(!isset($_GET['devicecount']) || !is_numeric($_GET['devicecount') || !isset($_GET['valid_until']) || !is_numeric($_GET['valid_until']))
+	{
+		echo 'failed</state>';
+	} else {
+		$vid=$vouchermanager->MakeVoucher($_GET['devicecount'],$_GET['valid_until'],$_GET['comment']);
+		if($vid==0)
+		{
+			echo 'failed</state>';
+		} else {
+			echo 'success</state>'."\n\t".'<vid>'.$vid.'</vid>';
+		}
+	}
+	echo '</action>';
+}
 ?>

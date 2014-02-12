@@ -189,4 +189,17 @@ if($_GET['do']=='dropuser')
 	echo '</action>';
 }
 
+if($_GET['do']=='lstusers')
+{
+	echo '<userlist>'."\n";
+	if($auth->CheckPermission('view_users'))
+	{
+		if(isset($_GET['user']))
+		{
+			echo "\t".'<state>success</state>'."\n"
+			$users=$usermanager->GetUserlist($_GET['user']);
+		}
+	}
+}
+
 ?>

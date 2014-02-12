@@ -126,7 +126,7 @@ if($_GET['do']=='addpermission')
 		{
 			echo "\t".'<state>failed</state>'."\n";
 		} else {
-			$usermanager->DropPermission($_GET['user'],$_GET['permission']);
+			$usermanager->AddPermission($_GET['user'],$_GET['permission']);
 			echo "\t".'<state>success</state>'."\n";
 		}
 	} else {
@@ -156,4 +156,37 @@ if($_GET['do']=='lstpermissions')
 	}
 	echo '</permissionlist>';
 }
+
+if($_GET['do']=='droppermission')
+{
+	echo '<action>'."\n\t".'<job>droppermission</job>'."\n";
+	if($auth->CheckPermission('edit_permissions'))
+	{
+		if(!isset($_GET['user']) || !isset($_GET['permission']))
+		{
+			echo "\t".'<state>failed</state>'."\n";
+		} else {
+			$usermanager->DropPermission($_GET['user'],$_GET['permission']);
+			echo "\t".'<state>success</state>'."\n";
+		}
+	}
+	echo '</action>';
+}
+
+if($_GET['do']=='dropuser')
+{
+	echo '<action>'."\n\t".'<job>dropuser</job>'."\n";
+	if($auth->CheckPermission('delete_users'))
+	{
+		if(!isset($_GET['user']))
+		{
+			echo "\t".'<state>failed</state>'."\n";
+		} else {
+			$usermanager->DropPermissionDeleteUser($_GET['user']);
+			echo "\t".'<state>success</state>'."\n";
+		}
+	}
+	echo '</action>';
+}
+
 ?>

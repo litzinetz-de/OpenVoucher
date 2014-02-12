@@ -16,7 +16,7 @@ if($_GET['do']=='logout')
 	$auth->Logout();
 }
 
-if($_GET['do']=='lst-vouchers')
+if($_GET['do']=='lstvouchers')
 {
 	echo '<voucherlist>'."\n";
 	if($auth->CheckPermission('view_voucher'))
@@ -115,5 +115,45 @@ if($_GET['do']=='adduser')
 		echo "\t".'<state>failed</state>'."\n";
 	}
 	echo '</action>';
+}
+
+if($_GET['do']=='addpermission')
+{
+	echo '<action>'."\n\t".'<job>addpermission</job>'."\n";
+	if($auth->CheckPermission('edit_permissions'))
+	{
+		if(!isset($_GET['user']) || !isset($_GET['permission']))
+		{
+			echo "\t".'<state>failed</state>'."\n";
+		} else {
+			$usermanager->DropPermission($_GET['user'],$_GET['permission']);
+			echo "\t".'<state>success</state>'."\n";
+		}
+	} else {
+		echo "\t".'<state>failed</state>'."\n";
+	}
+	echo '</action>';
+}
+
+if($_GET['do']=='lstpermissions')
+{
+	echo '<permissionlist>'."\n";
+	if($auth->CheckPermission('edit_permissions'))
+	{
+		if(isset($_GET['user']))
+		{
+			echo "\t".'<state>success</state>'."\n";
+			$permissions=$usermanager->GetPermissionList($_GET['user']);
+			foreach($permissions as $permission)
+			{
+				echo "\t".'<permission>'.$permission.'</permission>'."\n";
+			}
+		} else {
+			echo "\t".'<state>failed</state>'."\n";
+		}
+	} else {
+		echo "\t".'<state>failed</state>'."\n";
+	}
+	echo '</permissionlist>';
 }
 ?>

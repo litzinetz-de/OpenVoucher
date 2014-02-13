@@ -194,12 +194,16 @@ if($_GET['do']=='lstusers')
 	echo '<userlist>'."\n";
 	if($auth->CheckPermission('view_users'))
 	{
-		if(isset($_GET['user']))
+		echo "\t".'<state>success</state>'."\n"
+		$users=$usermanager->GetUserlist();
+		foreach($users as $user)
 		{
-			echo "\t".'<state>success</state>'."\n"
-			$users=$usermanager->GetUserlist($_GET['user']);
+			echo "\t".'<user>'."\n\t\t".'<username>'.$user['username'].'</username>'."\n\t\t".'<permissions>'.$user['permission_list'].'</permissions>'."\n\t".'</user>';
 		}
+	} else {
+		echo "\t".'<state>failed</state>'."\n";
 	}
+	echo '</userlist>';
 }
 
 ?>

@@ -122,7 +122,7 @@ if($_GET['do']=='drop_permission')
 	
 	if(!$a->CheckPermission('edit_permissions'))
 	{
-		echo '<center><b>You have no permission to edit permissions.</b></center></body></html>';
+		echo '<center><b>You are not allowed to edit permissions.</b></center></body></html>';
 		die();
 	}
 	
@@ -140,7 +140,7 @@ if($_GET['do']=='add_permission')
 	
 	if(!$a->CheckPermission('edit_permissions'))
 	{
-		echo '<center><b>You have no permission to edit permissions.</b></center></body></html>';
+		echo '<center><b>You are not allowed to edit permissions.</b></center></body></html>';
 		die();
 	}
 	

@@ -206,4 +206,21 @@ if($_GET['do']=='lstusers')
 	echo '</userlist>';
 }
 
+if($_GET['do']=='lstavailablepermissions')
+{
+	echo '<permissionlist>'."\n";
+	if($auth->CheckPermission('edit_permissions'))
+	{
+		echo "\t".'<state>success</state>'."\n";
+		$permissions=$usermanager->GetExistingPermissions();
+		foreach($permissions as $permission)
+		{
+			echo "\t".'<permission>'.$permission.'</permission>'."\n";
+		}
+	} else {
+		echo "\t".'<state>failed</state>'."\n";
+	}
+	echo '</permissionlist>';
+}
+
 ?>

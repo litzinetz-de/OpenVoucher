@@ -16,7 +16,7 @@ if($_GET['do']=='logout')
 	$auth->Logout();
 }
 
-if($_GET['do']=='lst-vouchers')
+if($_GET['do']=='lstvouchers')
 {
 	echo '<voucherlist>'."\n";
 	if($auth->CheckPermission('view_voucher'))
@@ -41,45 +41,198 @@ if($_GET['do']=='lst-vouchers')
 
 if($_GET['do']=='dropvoucher')
 {
-	echo '<action>'."\n\t".'<job>dropvoucher</job>'."\n\t<state>";
-	if(trim($_GET['vid'])=='')
+	echo '<action>'."\n\t".'<job>dropvoucher</job>'."\n";
+	if($auth->CheckPermission('drop_voucher'))
 	{
-		echo 'failed';
+		if(trim($_GET['vid'])=='')
+		{
+			echo "\t".'<state>failed</state>'."\n";
+		} else {
+			echo "\t".'<state>success</state>'."\n";
+			$vouchermanager->DropVoucher($_GET['vid'],true);
+		}
 	} else {
-		echo 'success';
-		$vouchermanager->DropVoucher($_GET['vid'],true);
+		echo "\t".'<state>failed</state>'."\n";
 	}
-	echo '</state>'."\n".'</action>';
+	echo '</action>';
 }
 
 if($_GET['do']=='dropdevice')
 {
-	echo '<action>'."\n\t".'<job>dropdevice</job>'."\n\t<state>";
-	if(trim($_GET['type'])=='' || trim($_GET['addr'])=='')
+	echo '<action>'."\n\t".'<job>dropdevice</job>'."\n";
+	
+	if($auth->CheckPermission('drop_device'))
 	{
-		echo 'failed';
+		if(trim($_GET['type'])=='' || trim($_GET['addr'])=='')
+		{
+			echo "\t".'<state>failed</state>'."\n";
+		} else {
+			echo "\t".'<state>success</state>'."\n";
+			$vouchermanager->DropDevice($_GET['type'],$_GET['addr']);
+		}
 	} else {
-		echo 'success';
-		$vouchermanager->DropDevice($_GET['type'],$_GET['addr']);
+		
 	}
-	echo '</state>'."\n".'</action>';
+	echo '</action>';
 }
 if($_GET['do']=='addvoucher')
 {
-	echo '<action>'."\n\t".'<job>addvoucher</job>'."\n\t<state>";
+	echo '<action>'."\n\t".'<job>addvoucher</job>'."\n";
 	
-	if(!isset($_GET['devicecount']) || !is_numeric($_GET['devicecount']) || !isset($_GET['valid_until']) || !is_numeric($_GET['valid_until']))
+	if($auth->CheckPermission('add_voucher'))
 	{
-		echo 'failed</state>';
-	} else {
-		$vid=$vouchermanager->MakeVoucher($_GET['devicecount'],$_GET['valid_until'],$_GET['comment']);
-		if($vid==0)
+		if(!isset($_GET['devicecount']) || !is_numeric($_GET['devicecount']) || !isset($_GET['valid_until']) || !is_numeric($_GET['valid_until']))
 		{
-			echo 'failed</state>';
+			echo "\t".'<state>failed</state>'."\n";
 		} else {
-			echo 'success</state>'."\n\t".'<vid>'.$vid.'</vid>';
+			$vid=$vouchermanager->MakeVoucher($_GET['devicecount'],$_GET['valid_until'],$_GET['comment']);
+			if($vid==0)
+			{
+				echo "\t".'<state>failed</state>'."\n";
+			} else {
+				echo "\t".'<state>success</state>'."\n\t".'<vid>'.$vid.'</vid>'."\n";
+			}
+		}
+	} else {
+		echo "\t".'<state>failed</state>'."\n";
+	}
+	echo '</action>';
+}
+
+if($_GET['do']=='adduser')
+{
+	echo '<action>'."\n\t".'<job>adduser</job>'."\n";
+	if($auth->CheckPermission('add_users'))
+	{
+		if(!isset($_GET['user']) || !isset($_GET['pwd']))
+		{
+			echo "\t".'<state>failed</state>'."\n";
+		} else {
+			 $usermanager->AddUser($_POST['add_user'],$_POST['add_pwd']);
+			 echo "\t".'<state>success</state>'."\n";
+		}
+	} else {
+		echo "\t".'<state>failed</state>'."\n";
+	}
+	echo '</action>';
+}
+
+if($_GET['do']=='addpermission')
+{
+	echo '<action>'."\n\t".'<job>addpermission</job>'."\n";
+	if($auth->CheckPermission('edit_permissions'))
+	{
+		if(!isset($_GET['user']) || !isset($_GET['permission']))
+		{
+			echo "\t".'<state>failed</state>'."\n";
+		} else {
+			$usermanager->AddPermission($_GET['user'],$_GET['permission']);
+			echo "\t".'<state>success</state>'."\n";
+		}
+	} else {
+		echo "\t".'<state>failed</state>'."\n";
+	}
+	echo '</action>';
+}
+
+if($_GET['do']=='lstpermissions')
+{
+	echo '<permissionlist>'."\n";
+	if($auth->CheckPermission('edit_permissions'))
+	{
+		if(isset($_GET['user']))
+		{
+			echo "\t".'<state>success</state>'."\n";
+			$permissions=$usermanager->GetPermissionList($_GET['user']);
+			foreach($permissions as $permission)
+			{
+				echo "\t".'<permission>'.$permission.'</permission>'."\n";
+			}
+		} else {
+			echo "\t".'<state>failed</state>'."\n";
+		}
+	} else {
+		echo "\t".'<state>failed</state>'."\n";
+	}
+	echo '</permissionlist>';
+}
+
+if($_GET['do']=='droppermission')
+{
+	echo '<action>'."\n\t".'<job>droppermission</job>'."\n";
+	if($auth->CheckPermission('edit_permissions'))
+	{
+		if(!isset($_GET['user']) || !isset($_GET['permission']))
+		{
+			echo "\t".'<state>failed</state>'."\n";
+		} else {
+			$usermanager->DropPermission($_GET['user'],$_GET['permission']);
+			echo "\t".'<state>success</state>'."\n";
 		}
 	}
-	echo "\n".'</action>';
+	echo '</action>';
 }
+
+if($_GET['do']=='dropuser')
+{
+	echo '<action>'."\n\t".'<job>dropuser</job>'."\n";
+	if($auth->CheckPermission('delete_users'))
+	{
+		if(!isset($_GET['user']))
+		{
+			echo "\t".'<state>failed</state>'."\n";
+		} else {
+			$usermanager->DropPermissionDeleteUser($_GET['user']);
+			echo "\t".'<state>success</state>'."\n";
+		}
+	}
+	echo '</action>';
+}
+
+if($_GET['do']=='lstusers')
+{
+	echo '<userlist>'."\n";
+	if($auth->CheckPermission('view_users'))
+	{
+		echo "\t".'<state>success</state>'."\n"
+		$users=$usermanager->GetUserlist();
+		foreach($users as $user)
+		{
+			echo "\t".'<user>'."\n\t\t".'<username>'.$user['username'].'</username>'."\n\t\t".'<permissions>'.$user['permission_list'].'</permissions>'."\n\t".'</user>';
+		}
+	} else {
+		echo "\t".'<state>failed</state>'."\n";
+	}
+	echo '</userlist>';
+}
+
+if($_GET['do']=='lstavailablepermissions')
+{
+	echo '<permissionlist>'."\n";
+	if($auth->CheckPermission('edit_permissions'))
+	{
+		echo "\t".'<state>success</state>'."\n";
+		$permissions=$usermanager->GetExistingPermissions();
+		foreach($permissions as $permission)
+		{
+			echo "\t".'<permission>'.$permission.'</permission>'."\n";
+		}
+	} else {
+		echo "\t".'<state>failed</state>'."\n";
+	}
+	echo '</permissionlist>';
+}
+
+if($_GET['do']=='showversion')
+{
+	if($versionmanager->UpdateAvailable())
+	{
+		$update_av='y';
+	} else {
+		$update_av='n';
+	}
+	echo '<versioninfo>'."\n\t".'<state>success</state>'."\n\t".'<installed>'.$versionmanager->GetCurrentVersion().'</installed>'."\n\t".'<newest>'.$versionmanager->NewestVersion().'</newest>';
+	echo "\n\t".'<updateavailable>'.$update_av.'</updateavailable>'."\n".'</versioninfo>';
+}
+
 ?>

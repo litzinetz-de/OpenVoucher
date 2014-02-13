@@ -223,4 +223,16 @@ if($_GET['do']=='lstavailablepermissions')
 	echo '</permissionlist>';
 }
 
+if($_GET['do']=='showversion')
+{
+	if($versionmanager->UpdateAvailable())
+	{
+		$update_av='y';
+	} else {
+		$update_av='n';
+	}
+	echo '<versioninfo>'."\n\t".'<state>success</state>'."\n\t".'<installed>'.$versionmanager->GetCurrentVersion().'</installed>'."\n\t".'<newest>'.$versionmanager->NewestVersion().'</newest>';
+	echo "\n\t".'<updateavailable>'.$update_av.'</updateavailable>'."\n".'</versioninfo>';
+}
+
 ?>

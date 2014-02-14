@@ -25,6 +25,8 @@ class vouchermanager {
 		$this->settings['interfaces']['internal_ip']=INTERFACES_INTERNAL_IP;
 		$this->settings['interfaces']['external']=INTERFACES_EXTERNAL;
 		
+		$this->settings['system']['demo']=OV_DEMO;
+		
 		$this->mysqlconn=mysql_connect($this->settings['mysql']['host'],$this->settings['mysql']['user'],$this->settings['mysql']['pwd']);
 		mysql_select_db($this->settings['mysql']['db'],$this->mysqlconn);
 		
@@ -65,8 +67,6 @@ class vouchermanager {
 		}
 		$macAddr='';
 
-		// run the external command, break output into lines
-		//$arp=`arp -a $ipAddress`;
 		$arp=shell_exec($this->settings['system']['arp'].' -a '.$ipAddress);
 		
 		$x=strpos($arp,':');
@@ -83,62 +83,65 @@ class vouchermanager {
 	
 	public function BuildIPTables()
 	{
-		$ipt='#!/bin/sh'."\n\n".
-
-		'IPTABLES=\'sudo /sbin/iptables\''."\n".
-		'PORTAL_INT='.$this->settings['interfaces']['internal'].''."\n".
-		'OUTPUT_INT='.$this->settings['interfaces']['external'].''."\n\n".
-
-
-		'# Flush (delete all rules in chain)'."\n".
-		'$IPTABLES -F'."\n".
-		'$IPTABLES -X'."\n".
-		'$IPTABLES -t nat -F'."\n".
-		'$IPTABLES -t nat -X'."\n".
-		'$IPTABLES -t mangle -F'."\n".
-		'$IPTABLES -t mangle -X'."\n".
-		'$IPTABLES -P INPUT ACCEPT'."\n".
-		'$IPTABLES -P FORWARD ACCEPT'."\n".
-		'$IPTABLES -P OUTPUT ACCEPT'."\n\n".
-
-		'# Chain for captive portal'."\n".
-		'$IPTABLES -N captivePortal -t mangle'."\n".
-		'$IPTABLES -t mangle -A PREROUTING -j captivePortal'."\n\n".
-
-		'# List of allowed MAC addresses'."\n";
-		
-		$res=mysql_query('SELECT devices.addr FROM devices INNER JOIN vouchers ON devices.voucher_id=vouchers.voucher_id WHERE type="mac" AND valid_until>'.time(),$this->mysqlconn);
-		while($row=mysql_fetch_array($res))
+		if($this->settings['system']['demo'])
 		{
-			$ipt=$ipt.'$IPTABLES -t mangle -A captivePortal -m mac --mac-source '.$row['addr'].' -j RETURN'."\n";
+			$ipt='#!/bin/sh'."\n\n".
+
+			'IPTABLES=\'sudo '.$this->settings['system']['iptables'].'\''."\n".
+			'PORTAL_INT='.$this->settings['interfaces']['internal'].''."\n".
+			'OUTPUT_INT='.$this->settings['interfaces']['external'].''."\n\n".
+
+
+			'# Flush (delete all rules in chain)'."\n".
+			'$IPTABLES -F'."\n".
+			'$IPTABLES -X'."\n".
+			'$IPTABLES -t nat -F'."\n".
+			'$IPTABLES -t nat -X'."\n".
+			'$IPTABLES -t mangle -F'."\n".
+			'$IPTABLES -t mangle -X'."\n".
+			'$IPTABLES -P INPUT ACCEPT'."\n".
+			'$IPTABLES -P FORWARD ACCEPT'."\n".
+			'$IPTABLES -P OUTPUT ACCEPT'."\n\n".
+
+			'# Chain for captive portal'."\n".
+			'$IPTABLES -N captivePortal -t mangle'."\n".
+			'$IPTABLES -t mangle -A PREROUTING -j captivePortal'."\n\n".
+
+			'# List of allowed MAC addresses'."\n";
+			
+			$res=mysql_query('SELECT devices.addr FROM devices INNER JOIN vouchers ON devices.voucher_id=vouchers.voucher_id WHERE type="mac" AND valid_until>'.time(),$this->mysqlconn);
+			while($row=mysql_fetch_array($res))
+			{
+				$ipt=$ipt.'$IPTABLES -t mangle -A captivePortal -m mac --mac-source '.$row['addr'].' -j RETURN'."\n";
+			}
+			
+			$ipt=$ipt."\n".
+			'# List of allowed IP addresses'."\n";
+			
+			$res=mysql_query('SELECT devices.addr FROM devices INNER JOIN vouchers ON devices.voucher_id=vouchers.voucher_id WHERE type="ipv4" AND valid_until>'.time(),$this->mysqlconn);
+			while($row=mysql_fetch_array($res))
+			{
+				$ipt=$ipt.'$IPTABLES -t mangle -A captivePortal -s '.$row['addr'].' -j RETURN'."\n";
+			}
+			
+			$ipt=$ipt."\n".
+			'# DNS is allowed for all'."\n".
+			'$IPTABLES -t mangle -A captivePortal -i $PORTAL_INT -p udp --dport 53 -j RETURN'."\n\n".
+			'# Mark packets that are not allowed till here'."\n".
+			'$IPTABLES -t mangle -A captivePortal -i $PORTAL_INT -j MARK --set-mark 99'."\n\n".
+			'# Redirect unauthenticated clients to captive portal'."\n".
+			'$IPTABLES -t nat -A PREROUTING -m mark --mark 99 -i $PORTAL_INT -p tcp --dport 80 -j DNAT --to-destination '.$this->settings['interfaces']['internal_ip']."\n\n".
+			
+			'# drop all marked with 99'."\n".
+			'$IPTABLES -t filter -A FORWARD -m mark --mark 99 -j DROP'."\n\n".
+			'# masquerading NAT'."\n".
+			'$IPTABLES -t nat -A POSTROUTING -o $OUTPUT_INT -j MASQUERADE';
+			
+			file_put_contents($this->settings['system']['tmpdir'].'iptables-autogen.sh',$ipt);
+			shell_exec('chmod ugo+x '.$this->settings['system']['tmpdir'].'iptables-autogen.sh');
+			$runcmd=$this->settings['system']['tmpdir'].'iptables-autogen.sh';
+			shell_exec($runcmd);
 		}
-		
-		$ipt=$ipt."\n".
-		'# List of allowed IP addresses'."\n";
-		
-		$res=mysql_query('SELECT devices.addr FROM devices INNER JOIN vouchers ON devices.voucher_id=vouchers.voucher_id WHERE type="ipv4" AND valid_until>'.time(),$this->mysqlconn);
-		while($row=mysql_fetch_array($res))
-		{
-			$ipt=$ipt.'$IPTABLES -t mangle -A captivePortal -s '.$row['addr'].' -j RETURN'."\n";
-		}
-		
-		$ipt=$ipt."\n".
-		'# DNS is allowed for all'."\n".
-		'$IPTABLES -t mangle -A captivePortal -i $PORTAL_INT -p udp --dport 53 -j RETURN'."\n\n".
-		'# Mark packets that are not allowed till here'."\n".
-		'$IPTABLES -t mangle -A captivePortal -i $PORTAL_INT -j MARK --set-mark 99'."\n\n".
-		'# Redirect unauthenticated clients to captive portal'."\n".
-		'$IPTABLES -t nat -A PREROUTING -m mark --mark 99 -i $PORTAL_INT -p tcp --dport 80 -j DNAT --to-destination '.$this->settings['interfaces']['internal_ip']."\n\n".
-		
-		'# drop all marked with 99'."\n".
-		'$IPTABLES -t filter -A FORWARD -m mark --mark 99 -j DROP'."\n\n".
-		'# masquerading NAT'."\n".
-		'$IPTABLES -t nat -A POSTROUTING -o $OUTPUT_INT -j MASQUERADE';
-		
-		file_put_contents($this->settings['system']['tmpdir'].'iptables-autogen.sh',$ipt);
-		shell_exec('chmod ugo+x '.$this->settings['system']['tmpdir'].'iptables-autogen.sh');
-		$runcmd=$this->settings['system']['tmpdir'].'iptables-autogen.sh';
-		shell_exec($runcmd);
 	}
 	
 	public function MakeVoucher($devicecount,$valid_until,$comment)

@@ -12,4 +12,7 @@ define('SYSTEM_AUTHENTICATION','mac-only');
 define('INTERFACES_INTERNAL','eth1');
 define('INTERFACES_INTERNAL_IP','10.0.0.1');
 define('INTERFACES_EXTERNAL','eth0');
+
+// Set this to true to run OpenVoucher in demo mode
+define('OV_DEMO',false);
 ?>

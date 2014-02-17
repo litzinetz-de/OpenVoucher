@@ -14,5 +14,6 @@ define('INTERFACES_INTERNAL_IP','10.0.0.1');
 define('INTERFACES_EXTERNAL','eth0');
 
 // Set this to true to run OpenVoucher in demo mode
+// It will disable the generation and executing of iptables commands
 define('OV_DEMO',false);
 ?>

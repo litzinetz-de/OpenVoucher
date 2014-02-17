@@ -83,7 +83,7 @@ class vouchermanager {
 	
 	public function BuildIPTables()
 	{
-		if($this->settings['system']['demo'])
+		if(!$this->settings['system']['demo'])
 		{
 			$ipt='#!/bin/sh'."\n\n".
 

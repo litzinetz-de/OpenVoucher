@@ -196,15 +196,34 @@ class vouchermanager {
 		return $this->settings['system']['authentication'];
 	}
 	
-	public function AuthDevice($vid,$verification_key,$type,$addr)
+	// Check if a verification key is correct
+	public function VerifyVoucherKey($vid,$verification_key)
 	{
-		// Voucher valid?
-		$res=mysql_query('SELECT dev_count,valid_until,verification_key FROM vouchers WHERE voucher_id="'.$vid.'"',$this->mysqlconn);
+		$res=mysql_query('SELECT verification_key FROM vouchers WHERE voucher_id="'.$vid.'"',$this->mysqlconn);
 		$row=mysql_fetch_array($res);
 		
 		if($this->sysconfig->GetSetting('use_verification')=='y')
 		{
 			if($verification_key != $row['verification_key'])
+			{
+				return false;
+			} else {
+				return true;
+			}
+		} else {
+			return true;
+		}
+	}
+	
+	public function AuthDevice($vid,$verification_key,$type,$addr)
+	{
+		// Voucher valid?
+		$res=mysql_query('SELECT dev_count,valid_until FROM vouchers WHERE voucher_id="'.$vid.'"',$this->mysqlconn);
+		$row=mysql_fetch_array($res);
+		
+		if($this->sysconfig->GetSetting('use_verification')=='y')
+		{
+			if(!$this->VerifyVoucherKey($vid,$verification_key))
 			{
 				return 'verification-failed';
 			}

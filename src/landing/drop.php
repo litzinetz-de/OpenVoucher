@@ -44,7 +44,7 @@ if($_GET['do']=='lst-devices')
 	
 	foreach($devices as $device)
 	{
-		echo '<ul><a href="'.$_SERVER['PHP_SELF'].'?do=drop&vid='.$_POST['vid'].'&verification_key='.$_POST['verification_key'].'&device='.$device.'">'.$addr.'</a></ul>';
+		echo '<ul><a href="'.$_SERVER['PHP_SELF'].'?do=drop&vid='.$_POST['vid'].'&verification_key='.$_POST['verification_key'].'&device='.$device['addr'].'&type='.$device['type'].'">'.$device['addr'].'</a></ul>';
 	}
 }
 
@@ -64,13 +64,8 @@ if($_GET['do']=='drop')
 		echo 'Couldn\'t get device.</body></html>';
 		die();
 	}
-	if(filter_var($_GET['addr'], FILTER_VALIDATE_IP))
-	{
-		$type='ipv4';
-	} else {
-		$type='mac';
-	}
-	$v->DropDevice($type,$_GET['addr']);
+	$v->DropDevice($_GET['type'],$_GET['device']);
+	echo 'The device has been dropped. You can now go <a href="index.php">back</a> and login with your voucher.';
 }
 
 ?>

@@ -255,12 +255,12 @@ class vouchermanager {
 		if($type=='mac')
 		{
 			mysql_query('DELETE FROM devices WHERE type="mac" AND addr="'.$addr.'"',$this->mysqlconn);
-			shell_exec('sudo '.$this->settings['system']['iptables'].' -t mangle -D captivePortal -m mac --mac-source '.$addr.' -j RETURN');
+			if(!$this->settings['system']['demo']) shell_exec('sudo '.$this->settings['system']['iptables'].' -t mangle -D captivePortal -m mac --mac-source '.$addr.' -j RETURN');
 		}
 		if($type=='ipv4')
 		{
 			mysql_query('DELETE FROM devices WHERE type="ipv4" AND addr="'.$addr.'"',$this->mysqlconn);
-			shell_exec('sudo '.$this->settings['system']['iptables'].' -t mangle -D captivePortal -s '.$addr.' -j RETURN');
+			if(!$this->settings['system']['demo']) shell_exec('sudo '.$this->settings['system']['iptables'].' -t mangle -D captivePortal -s '.$addr.' -j RETURN');
 		}
 	}
 	

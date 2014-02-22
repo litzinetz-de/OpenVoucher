@@ -66,8 +66,11 @@ if($_GET['do']=='drop')
 	}
 	if(filter_var($_GET['addr'], FILTER_VALIDATE_IP))
 	{
-		//
+		$type='ipv4';
+	} else {
+		$type='mac';
 	}
+	$v->DropDevice($type,$_GET['addr']);
 }
 
 ?>

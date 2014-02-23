@@ -39,6 +39,23 @@ if($_GET['do']=='lstvouchers')
 	echo '</voucherlist>';
 }
 
+if($_GET['lstdevices'])
+{
+	echo '<devicelist>'."\n";
+	if($auth->CheckPermission('view_voucher') && isset($_GET['vid'])
+	{
+		echo "\t".'<state>success</state>'."\n";
+		$devices=$vouchermanager->GetDeviceList($_GET['vid']);
+		foreach($devices as $device)
+		{
+			echo "\t".'<device>'."\n\t\t".'<type>'.$device['type'].'</type>'."\n\t\t".'<addr>'.$device['addr'].'</addr>'."\n\t".'</device>'."\n";
+		}
+	} else {
+		echo "\t".'<state>failed</state>'."\n";
+	}
+	echo '</devicelist>';
+}
+
 if($_GET['do']=='dropvoucher')
 {
 	echo '<action>'."\n\t".'<job>dropvoucher</job>'."\n";

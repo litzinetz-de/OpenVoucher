@@ -1,0 +1,10 @@
+Package: openvoucher
+Version: 0.4.3
+Section: misc
+Priority: extra
+Architecture: all
+Depends: apache2 php5 php5-mysql mysql-server
+Installed-Size: 250
+Maintainer: Daniel Litzbach <dl@openvoucher.org>
+Homepage: www.openvoucher.org
+Description: OpenVoucher - www.openvoucher.org

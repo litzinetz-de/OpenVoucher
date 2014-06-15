@@ -49,7 +49,7 @@ class vouchermanager {
 	{
 		do
 		{
-			if(!isset($alt_date) && $alt_date!='')
+			if(isset($alt_date) && $alt_date!='')
 			{
 				$vid_date=$alt_date;
 			} else {

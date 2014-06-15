@@ -88,7 +88,7 @@ if($s->GetSetting('use_verification')=='y')
 }
 
 echo '<td><input type="checkbox" name="use_verification" value="y"'.$veri_checked.'></td></tr>
-<tr><td><b>Use expiration date for voucher codes:</b></td>';
+<tr><td>Use expiration date for voucher codes:</td>';
 
 if($s->GetSetting('use_exp_date')=='y')
 {

@@ -33,6 +33,13 @@ if($_GET['do']=='update')
 	} else {
 		$s->SetSetting('use_verification','n');
 	}
+	
+	if($_POST['use_exp_date']=='y')
+	{
+		$s->SetSetting('use_exp_date','y');
+	} else {
+		$s->SetSetting('use_exp_date','n');
+	}
 }
 
 if($_GET['do']=='logo')
@@ -81,6 +88,16 @@ if($s->GetSetting('use_verification')=='y')
 }
 
 echo '<td><input type="checkbox" name="use_verification" value="y"'.$veri_checked.'></td></tr>
+<tr><td><b>Use expiration date for voucher codes:</b></td>';
+
+if($s->GetSetting('use_exp_date')=='y')
+{
+	$exp_checked=' checked';
+} else {
+	$exp_checked='';
+}
+
+echo '<td><input type="checkbox" name="use_exp_date" value="y"'.$exp_checked.'></td></tr>
 </table>
 <br>
 <input type="submit" value="Save" class="formstyle">

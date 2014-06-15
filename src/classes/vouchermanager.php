@@ -45,11 +45,17 @@ class vouchermanager {
 		}
 	}
 	
-	private function GetNewVoucherID()
+	private function GetNewVoucherID($alt_date)
 	{
 		do
 		{
-			$vid=date('Y-m-d',time()).'-'.rand(111111,999999);
+			if(isset($alt_date) && $alt_date!='')
+			{
+				$vid_date=$alt_date;
+			} else {
+				$vid_date=time();
+			}
+			$vid=date('Y-m-d',$vid_date).'-'.rand(111111,999999);
 		} while($this->VoucherIDExists($vid));
 		return $vid;
 	}
@@ -146,7 +152,13 @@ class vouchermanager {
 	
 	public function MakeVoucher($devicecount,$valid_until,$comment)
 	{
-		$vid=$this->GetNewVoucherID();
+		if($this->sysconfig->GetSetting('use_exp_date')=='y')
+		{
+			$vid_date=$valid_until;
+		} else {
+			$vid_date=time();
+		}
+		$vid=$this->GetNewVoucherID($vid_date);
 		
 		if($this->sysconfig->GetSetting('use_verification')=='y')
 		{

@@ -2,7 +2,7 @@ OpenVoucher is an open source voucher management / hotspot system for authentica
 
 For further information and installation how to's, see the project's homepage:
 
-http://www.openvoucher.org/
+http://openvoucher.litzinetz.de/
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

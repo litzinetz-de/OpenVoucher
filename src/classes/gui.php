@@ -15,6 +15,7 @@ class admingui
 		<td><b>Verification key</b></td>
 		<td><b>Device count</b></td>
 		<td><b>Valid until</b></td>
+		<td><b>Valid for</b></td>
 		<td><b>Comment</b></td>
 		<td><b>Devices</b></td>
 		<td><b>Drop voucher</b></td>
@@ -31,11 +32,14 @@ class admingui
 				$bgclass='darkbg';
 				$a=true;
 			}
+			$valid_for_d=round($dataset[$i]['valid_for'] / 24);
+			$valid_for_h=$dataset[$i]['valid_for'] % 24;
 			echo '<tr class="'.$bgclass.'">
 			<td>'.$dataset[$i]['voucher_id'].'</td>
 			<td>'.$dataset[$i]['verification_key'].'</td>
 			<td>'.$dataset[$i]['dev_count'].'</td>
 			<td>'.date('Y-m-d H:i',$dataset[$i]['valid_until']).'</td>
+			<td>'.$valid_for_d.'d '.$valid_for_h.'h</td>
 			<td>'.$dataset[$i]['comment'].'&nbsp;</td>
 			<td>';
 			

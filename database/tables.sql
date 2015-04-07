@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS `vouchers` (
   `valid_until` int(11) NOT NULL,
   `verification_key` varchar(255),
   `comment` varchar(255) NOT NULL,
+   `valid_for` INT(11) NOT NULL,
   PRIMARY KEY (`voucher_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 

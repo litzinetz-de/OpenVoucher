@@ -55,7 +55,8 @@ class vouchermanager {
 			} else {
 				$vid_date=time();
 			}
-			$vid=date('Y-m-d',$vid_date).'-'.rand(111111,999999);
+			//$vid=date('Y-m-d',$vid_date).'-'.rand(111111,999999);
+			$vid=rand(1111111,9999999);
 		} while($this->VoucherIDExists($vid));
 		return $vid;
 	}
@@ -150,7 +151,7 @@ class vouchermanager {
 		}
 	}
 	
-	public function MakeVoucher($devicecount,$valid_until,$comment)
+	public function MakeVoucher($devicecount,$valid_until,$comment,$valid_for)
 	{
 		if($this->sysconfig->GetSetting('use_exp_date')=='y')
 		{
@@ -167,7 +168,7 @@ class vouchermanager {
 			$verification_key='';
 		}
 		
-		if(mysql_query('INSERT INTO vouchers (voucher_id,dev_count,valid_until,verification_key,comment) VALUES ("'.$vid.'",'.$devicecount.','.$valid_until.',"'.$verification_key.'","'.$comment.'")',$this->mysqlconn))
+		if(mysql_query('INSERT INTO vouchers (voucher_id,dev_count,valid_until,verification_key,comment,valid_for) VALUES ("'.$vid.'",'.$devicecount.','.$valid_until.',"'.$verification_key.'","'.$comment.'",'.$valid_for.')',$this->mysqlconn))
 		{
 			return $vid;
 		} else {
@@ -230,7 +231,7 @@ class vouchermanager {
 	public function AuthDevice($vid,$verification_key,$type,$addr)
 	{
 		// Voucher valid?
-		$res=mysql_query('SELECT dev_count,valid_until FROM vouchers WHERE voucher_id="'.$vid.'"',$this->mysqlconn);
+		$res=mysql_query('SELECT dev_count,valid_until,valid_for FROM vouchers WHERE voucher_id="'.$vid.'"',$this->mysqlconn);
 		$row=mysql_fetch_array($res);
 		
 		if($this->sysconfig->GetSetting('use_verification')=='y')
@@ -252,8 +253,14 @@ class vouchermanager {
 				return 'maxnumber-reached';
 			} else {
 				if(mysql_query('INSERT INTO devices VALUES ("'.$type.'","'.$addr.'","'.$vid.'")',$this->mysqlconn))
-				{
+				{ 
 					$this->BuildIPTables();
+					if ($row_dev['cnt']==0)
+					{
+						$v_for=$row['valid_for'];
+						$v_until=time()+($v_for*3600);
+						mysql_query('UPDATE vouchers SET valid_until="'.$v_until.'" WHERE voucher_id="'.$vid.'"',$this->mysqlconn);
+					}
 					return 'ok'; // Device has been authenticated
 				} else {
 					return 'db-error'; // Database error
@@ -344,7 +351,7 @@ class vouchermanager {
 	public function GetVoucherList($searchstring='')
 	{
 		$dataset=array();
-		$res=mysql_query('SELECT voucher_id,verification_key,dev_count,valid_until,comment FROM vouchers '.$searchstring);
+		$res=mysql_query('SELECT voucher_id,verification_key,dev_count,valid_until,comment,valid_for FROM vouchers ORDER BY valid_until'.$searchstring);
 		while($row=mysql_fetch_array($res))
 		{
 			array_push($dataset,$row);

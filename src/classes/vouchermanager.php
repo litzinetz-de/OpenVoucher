@@ -27,16 +27,19 @@ class vouchermanager {
 		
 		$this->settings['system']['demo']=OV_DEMO;
 		
-		$this->mysqlconn=mysql_connect($this->settings['mysql']['host'],$this->settings['mysql']['user'],$this->settings['mysql']['pwd']);
-		mysql_select_db($this->settings['mysql']['db'],$this->mysqlconn);
+		//$this->mysqlconn=mysql_connect($this->settings['mysql']['host'],$this->settings['mysql']['user'],$this->settings['mysql']['pwd']);
+		//mysql_select_db($this->settings['mysql']['db'],$this->mysqlconn);
+		$this->mysqlconn=new mysqli($this->settings['mysql']['host'],$this->settings['mysql']['user'],$this->settings['mysql']['pwd'],$this->settings['mysql']['db']);
 		
 		$this->sysconfig = new systemmanager();
 	}
 	
 	private function VoucherIDExists($vid)
 	{
-		$res=mysql_query('SELECT COUNT(*) AS cnt FROM vouchers WHERE voucher_id="'.$vid.'"',$this->mysqlconn);
-		$row=mysql_fetch_array($res);
+		//$res=mysql_query('SELECT COUNT(*) AS cnt FROM vouchers WHERE voucher_id="'.$vid.'"',$this->mysqlconn);
+		$qry='SELECT COUNT(*) AS cnt FROM vouchers WHERE voucher_id="'.$this->mysqlconn->real_escape_string($vid).'"';
+		$res=$this->mysqlconn->query($qry);
+		$row=$res->fetch_assoc();
 		if($row['cnt']>0)
 		{
 			return true;
@@ -115,8 +118,10 @@ class vouchermanager {
 
 			'# List of allowed MAC addresses'."\n";
 			
-			$res=mysql_query('SELECT devices.addr FROM devices INNER JOIN vouchers ON devices.voucher_id=vouchers.voucher_id WHERE type="mac" AND valid_until>'.time(),$this->mysqlconn);
-			while($row=mysql_fetch_array($res))
+			//$res=mysql_query('SELECT devices.addr FROM devices INNER JOIN vouchers ON devices.voucher_id=vouchers.voucher_id WHERE type="mac" AND valid_until>'.time(),$this->mysqlconn);
+			$qry='SELECT devices.addr FROM devices INNER JOIN vouchers ON devices.voucher_id=vouchers.voucher_id WHERE type="mac" AND valid_until>'.time();
+			$res=$this->mysqlconn->query($qry);
+			while($row=$res->fetch_assoc())
 			{
 				$ipt=$ipt.'$IPTABLES -t mangle -A captivePortal -m mac --mac-source '.$row['addr'].' -j RETURN'."\n";
 			}
@@ -124,8 +129,10 @@ class vouchermanager {
 			$ipt=$ipt."\n".
 			'# List of allowed IP addresses'."\n";
 			
-			$res=mysql_query('SELECT devices.addr FROM devices INNER JOIN vouchers ON devices.voucher_id=vouchers.voucher_id WHERE type="ipv4" AND valid_until>'.time(),$this->mysqlconn);
-			while($row=mysql_fetch_array($res))
+			//$res=mysql_query('SELECT devices.addr FROM devices INNER JOIN vouchers ON devices.voucher_id=vouchers.voucher_id WHERE type="ipv4" AND valid_until>'.time(),$this->mysqlconn);
+			$qry='SELECT devices.addr FROM devices INNER JOIN vouchers ON devices.voucher_id=vouchers.voucher_id WHERE type="ipv4" AND valid_until>'.time();
+			$res=$this->mysqlconn->query($qry);
+			while($row=$res->fetch_assoc())
 			{
 				$ipt=$ipt.'$IPTABLES -t mangle -A captivePortal -s '.$row['addr'].' -j RETURN'."\n";
 			}
@@ -167,7 +174,9 @@ class vouchermanager {
 			$verification_key='';
 		}
 		
-		if(mysql_query('INSERT INTO vouchers (voucher_id,dev_count,valid_until,verification_key,comment) VALUES ("'.$vid.'",'.$devicecount.','.$valid_until.',"'.$verification_key.'","'.$comment.'")',$this->mysqlconn))
+		$qry='INSERT INTO vouchers (voucher_id,dev_count,valid_until,verification_key,comment) VALUES ("'.$this->mysqlconn->real_escape_string($vid).'",'.$this->mysqlconn->real_escape_string($devicecount).','.$this->mysqlconn->real_escape_string($valid_until).',"'.$this->mysqlconn->real_escape_string($verification_key).'","'.$this->mysqlconn->real_escape_string($comment).'")';
+		if($this->mysqlconn->query($qry))
+		//if(mysql_query('INSERT INTO vouchers (voucher_id,dev_count,valid_until,verification_key,comment) VALUES ("'.$vid.'",'.$devicecount.','.$valid_until.',"'.$verification_key.'","'.$comment.'")',$this->mysqlconn))
 		{
 			return $vid;
 		} else {
@@ -178,9 +187,11 @@ class vouchermanager {
 	public function DropVoucher($vid,$rebuild=true)
 	{
 		// Delete voucher from db
-		mysql_query('DELETE FROM vouchers WHERE voucher_id="'.$vid.'"',$this->mysqlconn);
-		mysql_query('DELETE FROM devices WHERE voucher_id="'.$vid.'"',$this->mysqlconn);
-		if(mysql_affected_rows($this->mysqlconn)>0) // if a voucher has been deleted, rebuild iptables
+		//mysql_query('DELETE FROM vouchers WHERE voucher_id="'.$vid.'"',$this->mysqlconn);
+		$this->mysqlconn->query('DELETE FROM vouchers WHERE voucher_id="'.$this->mysqlconn->real_escape_string($vid).'"');
+		//mysql_query('DELETE FROM devices WHERE voucher_id="'.$vid.'"',$this->mysqlconn);
+		$this->mysqlconn->query('DELETE FROM devices WHERE voucher_id="'.$this->mysqlconn->real_escape_string($vid).'"');
+		if($this->mysqlconn->affected_rows>0) // if a device has been deleted, rebuild iptables
 		{
 			if($rebuild)
 			{
@@ -192,8 +203,9 @@ class vouchermanager {
 	public function DropOldVouchers()
 	{
 		// Look for expired vouchers in db
-		$res=mysql_query('SELECT voucher_id FROM vouchers WHERE valid_until<'.time(),$this->mysqlconn);
-		while($row=mysql_fetch_array($res))
+		//$res=mysql_query('SELECT voucher_id FROM vouchers WHERE valid_until<'.time(),$this->mysqlconn);
+		$res=$this->mysqlconn->query('SELECT voucher_id FROM vouchers WHERE valid_until<'.time());
+		while($row=$res->fetch_assoc())
 		{
 			// Drop found vouchers but do not rebuild iptables for each one. this would waste resources
 			$this->DropVoucher($row['voucher_id'],false);
@@ -211,8 +223,9 @@ class vouchermanager {
 	// Check if a verification key is correct
 	public function VerifyVoucherKey($vid,$verification_key)
 	{
-		$res=mysql_query('SELECT verification_key FROM vouchers WHERE voucher_id="'.$vid.'"',$this->mysqlconn);
-		$row=mysql_fetch_array($res);
+		//$res=mysql_query('SELECT verification_key FROM vouchers WHERE voucher_id="'.$vid.'"',$this->mysqlconn);
+		$res=$this->mysqlconn->query('SELECT verification_key FROM vouchers WHERE voucher_id="'.$this->mysqlconn->real_escape_string($vid).'"');
+		$row=$res->fetch_assoc();
 		
 		if($this->sysconfig->GetSetting('use_verification')=='y')
 		{
@@ -230,8 +243,9 @@ class vouchermanager {
 	public function AuthDevice($vid,$verification_key,$type,$addr)
 	{
 		// Voucher valid?
-		$res=mysql_query('SELECT dev_count,valid_until FROM vouchers WHERE voucher_id="'.$vid.'"',$this->mysqlconn);
-		$row=mysql_fetch_array($res);
+		//$res=mysql_query('SELECT dev_count,valid_until FROM vouchers WHERE voucher_id="'.$vid.'"',$this->mysqlconn);
+		$res=$this->mysqlconn->query('SELECT dev_count,valid_until FROM vouchers WHERE voucher_id="'.$this->mysqlconn->real_escape_string($vid).'"');
+		$row=$res->fetch_assoc();
 		
 		if($this->sysconfig->GetSetting('use_verification')=='y')
 		{
@@ -245,13 +259,15 @@ class vouchermanager {
 		{
 			return 'not-found-exceeded';
 		} else {
-			$res=mysql_query('SELECT COUNT(*) AS cnt FROM devices WHERE voucher_id="'.$vid.'"',$this->mysqlconn);
-			$row_dev=mysql_fetch_array($res);
+			//$res=mysql_query('SELECT COUNT(*) AS cnt FROM devices WHERE voucher_id="'.$vid.'"',$this->mysqlconn);
+			$res=$this->mysqlconn->query('SELECT COUNT(*) AS cnt FROM devices WHERE voucher_id="'.$this->mysqlconn->real_escape_string($vid).'"');
+			$row_dev=$res->fetch_assoc();
 			if(trim($row_dev['cnt'])=='' || $row_dev['cnt']>=$row['dev_count']) // Maximum number of devices reached or exceeded, or not able to get number of devices (database failure?)
 			{
 				return 'maxnumber-reached';
 			} else {
-				if(mysql_query('INSERT INTO devices VALUES ("'.$type.'","'.$addr.'","'.$vid.'")',$this->mysqlconn))
+				//if(mysql_query('INSERT INTO devices VALUES ("'.$type.'","'.$addr.'","'.$vid.'")',$this->mysqlconn))
+				if($this->mysqlconn->query('INSERT INTO devices VALUES ("'.$this->mysqlconn->real_escape_string($type).'","'.$this->mysqlconn->real_escape_string($addr).'","'.$this->mysqlconn->real_escape_string($vid).'")'))
 				{
 					$this->BuildIPTables();
 					return 'ok'; // Device has been authenticated
@@ -266,12 +282,14 @@ class vouchermanager {
 	{
 		if($type=='mac')
 		{
-			mysql_query('DELETE FROM devices WHERE type="mac" AND addr="'.$addr.'"',$this->mysqlconn);
+			//mysql_query('DELETE FROM devices WHERE type="mac" AND addr="'.$addr.'"',$this->mysqlconn);
+			$this->mysqlconn->query('DELETE FROM devices WHERE type="mac" AND addr="'.$this->mysqlconn->real_escape_string($addr).'"');
 			if(!$this->settings['system']['demo']) shell_exec('sudo '.$this->settings['system']['iptables'].' -t mangle -D captivePortal -m mac --mac-source '.$addr.' -j RETURN');
 		}
 		if($type=='ipv4')
 		{
-			mysql_query('DELETE FROM devices WHERE type="ipv4" AND addr="'.$addr.'"',$this->mysqlconn);
+			//mysql_query('DELETE FROM devices WHERE type="ipv4" AND addr="'.$addr.'"',$this->mysqlconn);
+			$this->mysqlconn->query('DELETE FROM devices WHERE type="ipv4" AND addr="'.$this->mysqlconn->real_escape_string($addr).'"');
 			if(!$this->settings['system']['demo']) shell_exec('sudo '.$this->settings['system']['iptables'].' -t mangle -D captivePortal -s '.$addr.' -j RETURN');
 		}
 	}
@@ -279,10 +297,11 @@ class vouchermanager {
 	// Return a list of all devices that are registered to a specific voucher
 	public function GetDeviceList($vid)
 	{
-		$res=mysql_query('SELECT type,addr FROM devices WHERE voucher_id="'.$vid.'"',$this->mysqlconn);
+		//$res=mysql_query('SELECT type,addr FROM devices WHERE voucher_id="'.$vid.'"',$this->mysqlconn);
+		$res=$this->mysqlconn->query('SELECT type,addr FROM devices WHERE voucher_id="'.$this->mysqlconn->real_escape_string($vid).'"');
 		$i=0;
 		$devices=array();
-		while($row=mysql_fetch_array($res))
+		while($row=$res->fetch_assoc())
 		{
 			$devices[$i]=$row;
 			$i++;
@@ -293,8 +312,9 @@ class vouchermanager {
 	// Check if a specific device is registered to a specific voucher
 	public function DeviceInVoucher($vid,$type,$addr)
 	{
-		$res=mysql_query('SELECT voucher_id FROM devices WHERE type="'.$type.'" AND addr="'.$addr.'"',$this->mysqlconn);
-		$row=mysql_fetch_array($res);
+		//$res=mysql_query('SELECT voucher_id FROM devices WHERE type="'.$type.'" AND addr="'.$addr.'"',$this->mysqlconn);
+		$res=$this->mysqlconn->query('SELECT voucher_id FROM devices WHERE type="'.$this->mysqlconn->real_escape_string($type).'" AND addr="'.$this->mysqlconn->real_escape_string($addr).'"');
+		$row=$res->fetch_assoc();
 		if($row['voucher_id']==$vid)
 		{
 			return true;
@@ -317,8 +337,9 @@ class vouchermanager {
 			$type='ipv4';
 		}
 		
-		$res=mysql_query('SELECT voucher_id FROM devices WHERE type="'.$type.'" AND addr="'.$addr.'"',$this->mysqlconn);
-		$row=mysql_fetch_array($res);
+		//$res=mysql_query('SELECT voucher_id FROM devices WHERE type="'.$type.'" AND addr="'.$addr.'"',$this->mysqlconn);
+		$res=$this->mysqlconn->query('SELECT voucher_id FROM devices WHERE type="'.$this->mysqlconn->real_escape_string($type).'" AND addr="'.$this->mysqlconn->real_escape_string($addr).'"');
+		$row=$res->fetch_assoc();;
 		if(trim($row['voucher_id'])!='')
 		{
 			return array($type,$addr,$row['voucher_id']);
@@ -330,11 +351,13 @@ class vouchermanager {
 	// Get some voucher information from db
 	public function GetVoucherInfo($vid)
 	{
-		$res=mysql_query('SELECT dev_count,valid_until FROM vouchers WHERE voucher_id="'.$vid.'"',$this->mysqlconn);
-		$row=mysql_fetch_array($res);
+		//$res=mysql_query('SELECT dev_count,valid_until FROM vouchers WHERE voucher_id="'.$vid.'"',$this->mysqlconn);
+		$res=$this->mysqlconn->query('SELECT dev_count,valid_until FROM vouchers WHERE voucher_id="'.$this->mysqlconn->real_escape_string($vid).'"');
+		$row=$res->fetch_assoc();
 		
-		$res=mysql_query('SELECT COUNT(*) AS cnt FROM devices WHERE voucher_id="'.$vid.'"',$this->mysqlconn);
-		$cnt=mysql_fetch_array($res);
+		//$res=mysql_query('SELECT COUNT(*) AS cnt FROM devices WHERE voucher_id="'.$vid.'"',$this->mysqlconn);
+		$res=$this->mysqlconn->query('SELECT COUNT(*) AS cnt FROM devices WHERE voucher_id="'.$this->mysqlconn->real_escape_string($vid).'"');
+		$cnt=$res->fetch_assoc();
 		
 		$row['remain']=$row['dev_count']-$cnt['cnt']; // Calculate how many devices are left to register
 		return $row;
@@ -344,8 +367,9 @@ class vouchermanager {
 	public function GetVoucherList($searchstring='')
 	{
 		$dataset=array();
-		$res=mysql_query('SELECT voucher_id,verification_key,dev_count,valid_until,comment FROM vouchers '.$searchstring);
-		while($row=mysql_fetch_array($res))
+		//$res=mysql_query('SELECT voucher_id,verification_key,dev_count,valid_until,comment FROM vouchers '.$searchstring);
+		$res=$this->mysqlconn->query('SELECT voucher_id,verification_key,dev_count,valid_until,comment FROM vouchers '.$this->mysqlconn->real_escape_string($searchstring));
+		while($row=$res->fetch_assoc())
 		{
 			array_push($dataset,$row);
 		}

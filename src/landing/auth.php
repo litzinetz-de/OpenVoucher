@@ -21,7 +21,7 @@ if($authtype=='mac-only')
 	}
 } elseif($authtype=='mac-ipv4')
 {
-	// MAC and IP4v fallback
+	// TODO MAC and IP4v fallback
 } elseif($authtype=='ipv4-only')
 {
 	// IPv4 only

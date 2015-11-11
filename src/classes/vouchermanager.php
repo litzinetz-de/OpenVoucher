@@ -157,9 +157,9 @@ class vouchermanager {
 		}
 	}
 	
-	public function MakeVoucher($devicecount,$valid_until,$comment)
+	public function MakeVoucher($devicecount,$valid_until,$valid_for,$comment)
 	{
-		if($this->sysconfig->GetSetting('use_exp_date')=='y')
+		if($this->sysconfig->GetSetting('use_exp_date')=='y' && ($valid_for==0 || trim($valid_for)=='') && $valid_until!=0 && trim($valid_until)!='')
 		{
 			$vid_date=$valid_until;
 		} else {
@@ -174,7 +174,7 @@ class vouchermanager {
 			$verification_key='';
 		}
 		
-		$qry='INSERT INTO vouchers (voucher_id,dev_count,valid_until,verification_key,comment) VALUES ("'.$this->mysqlconn->real_escape_string($vid).'",'.$this->mysqlconn->real_escape_string($devicecount).','.$this->mysqlconn->real_escape_string($valid_until).',"'.$this->mysqlconn->real_escape_string($verification_key).'","'.$this->mysqlconn->real_escape_string($comment).'")';
+		$qry='INSERT INTO vouchers (voucher_id,dev_count,valid_until,valid_for,verification_key,comment) VALUES ("'.$this->mysqlconn->real_escape_string($vid).'",'.$this->mysqlconn->real_escape_string($devicecount).','.$this->mysqlconn->real_escape_string($valid_until).','.$this->mysqlconn->real_escape_string($valid_for).',"'.$this->mysqlconn->real_escape_string($verification_key).'","'.$this->mysqlconn->real_escape_string($comment).'")';
 		if($this->mysqlconn->query($qry))
 		//if(mysql_query('INSERT INTO vouchers (voucher_id,dev_count,valid_until,verification_key,comment) VALUES ("'.$vid.'",'.$devicecount.','.$valid_until.',"'.$verification_key.'","'.$comment.'")',$this->mysqlconn))
 		{
@@ -244,8 +244,14 @@ class vouchermanager {
 	{
 		// Voucher valid?
 		//$res=mysql_query('SELECT dev_count,valid_until FROM vouchers WHERE voucher_id="'.$vid.'"',$this->mysqlconn);
-		$res=$this->mysqlconn->query('SELECT dev_count,valid_until FROM vouchers WHERE voucher_id="'.$this->mysqlconn->real_escape_string($vid).'"');
+		$res=$this->mysqlconn->query('SELECT voucher_id,dev_count,valid_until,valid_for FROM vouchers WHERE voucher_id="'.$this->mysqlconn->real_escape_string($vid).'"');
 		$row=$res->fetch_assoc();
+		
+		// Voucher not found
+		if(trim($row['voucher_id'])=='')
+		{
+			return 'not-found-exceeded';
+		}
 		
 		if($this->sysconfig->GetSetting('use_verification')=='y')
 		{
@@ -255,7 +261,14 @@ class vouchermanager {
 			}
 		}
 		
-		if(trim($row['valid_until'])=='' || $row['valid_until']<=time()) // Voucher not found or exceeded
+		// Voucher shall not expire before first use
+		if($row['valid_for']!=0 && trim($row['valid_for']!=''))
+		{
+			$row['valid_until']=time()+$row['valid_for'];
+			$this->mysqlconn->query('UPDATE vouchers SET valid_until='.$this->mysqlconn->real_escape_string($row['valid_until']).' WHERE voucher_id="'.$this->mysqlconn->real_escape_string($vid).'"');
+		}
+		
+		if($row['valid_until']<=time()) // Voucher exceeded
 		{
 			return 'not-found-exceeded';
 		} else {
@@ -352,7 +365,7 @@ class vouchermanager {
 	public function GetVoucherInfo($vid)
 	{
 		//$res=mysql_query('SELECT dev_count,valid_until FROM vouchers WHERE voucher_id="'.$vid.'"',$this->mysqlconn);
-		$res=$this->mysqlconn->query('SELECT dev_count,valid_until FROM vouchers WHERE voucher_id="'.$this->mysqlconn->real_escape_string($vid).'"');
+		$res=$this->mysqlconn->query('SELECT dev_count,valid_until,valid_for FROM vouchers WHERE voucher_id="'.$this->mysqlconn->real_escape_string($vid).'"');
 		$row=$res->fetch_assoc();
 		
 		//$res=mysql_query('SELECT COUNT(*) AS cnt FROM devices WHERE voucher_id="'.$vid.'"',$this->mysqlconn);
@@ -368,7 +381,7 @@ class vouchermanager {
 	{
 		$dataset=array();
 		//$res=mysql_query('SELECT voucher_id,verification_key,dev_count,valid_until,comment FROM vouchers '.$searchstring);
-		$res=$this->mysqlconn->query('SELECT voucher_id,verification_key,dev_count,valid_until,comment FROM vouchers '.$this->mysqlconn->real_escape_string($searchstring));
+		$res=$this->mysqlconn->query('SELECT voucher_id,verification_key,dev_count,valid_until,valid_for,comment FROM vouchers '.$this->mysqlconn->real_escape_string($searchstring));
 		while($row=$res->fetch_assoc())
 		{
 			array_push($dataset,$row);

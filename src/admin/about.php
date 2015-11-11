@@ -10,7 +10,7 @@ include('../includes/header.php');
 include('menu.php');
 
 echo 'OpenVoucher<br>Version '.$vers->GetCurrentVersion().'<br><br>
-Copyright (C) '.$vers->GetReleaseYear().'  Daniel Litzbach (litzi0815) and others<br><br>
+Copyright (C) '.$vers->GetReleaseYear().'  Daniel Litzbach (<a href="http://www.litzinetz.de/" target="_blank">www.litzinetz.de</a>) and others<br><br>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

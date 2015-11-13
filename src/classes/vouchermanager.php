@@ -204,7 +204,7 @@ class vouchermanager {
 	{
 		// Look for expired vouchers in db
 		//$res=mysql_query('SELECT voucher_id FROM vouchers WHERE valid_until<'.time(),$this->mysqlconn);
-		$res=$this->mysqlconn->query('SELECT voucher_id FROM vouchers WHERE valid_until<'.time());
+		$res=$this->mysqlconn->query('SELECT voucher_id FROM vouchers WHERE valid_until<'.time().' AND valid_until <> 0');
 		while($row=$res->fetch_assoc())
 		{
 			// Drop found vouchers but do not rebuild iptables for each one. this would waste resources
@@ -243,7 +243,7 @@ class vouchermanager {
 	public function AuthDevice($vid,$verification_key,$type,$addr)
 	{
 		// Voucher valid?
-		//$res=mysql_query('SELECT dev_count,valid_until FROM vouchers WHERE voucher_id="'.$vid.'"',$this->mysqlconn);
+		//$res=mysql_query('SELECT dev_countdev_count,valid_until FROM vouchers WHERE voucher_id="'.$vid.'"',$this->mysqlconn);
 		$res=$this->mysqlconn->query('SELECT voucher_id,dev_count,valid_until,valid_for FROM vouchers WHERE voucher_id="'.$this->mysqlconn->real_escape_string($vid).'"');
 		$row=$res->fetch_assoc();
 		
@@ -352,7 +352,7 @@ class vouchermanager {
 		
 		//$res=mysql_query('SELECT voucher_id FROM devices WHERE type="'.$type.'" AND addr="'.$addr.'"',$this->mysqlconn);
 		$res=$this->mysqlconn->query('SELECT voucher_id FROM devices WHERE type="'.$this->mysqlconn->real_escape_string($type).'" AND addr="'.$this->mysqlconn->real_escape_string($addr).'"');
-		$row=$res->fetch_assoc();;
+		$row=$res->fetch_assoc();
 		if(trim($row['voucher_id'])!='')
 		{
 			return array($type,$addr,$row['voucher_id']);

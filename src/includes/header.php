@@ -18,6 +18,7 @@ if(file_exists('../graphics/'.$logo) && !is_dir('../graphics/'.$logo))
 <html>
 <head>
 <link rel="stylesheet" href="../style/style.css">
+<script language="javascript" src="functions.js"></script>
 <title>OpenVoucher</title>
 </head>
 <body>

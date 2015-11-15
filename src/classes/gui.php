@@ -7,6 +7,65 @@ class admingui
 	{
 		$this->v = new vouchermanager(); // An own instance of vouchermanager is needed to query the devices that are connected to each voucher
 	}
+	
+	private function secondsToTime($inputSeconds) {
+
+    $secondsInAMinute = 60;
+    $secondsInAnHour  = 60 * $secondsInAMinute;
+    $secondsInADay    = 24 * $secondsInAnHour;
+
+    // extract days
+    $days = floor($inputSeconds / $secondsInADay);
+	$days=(int)$days;
+
+    // extract hours
+    $hourSeconds = $inputSeconds % $secondsInADay;
+    $hours = floor($hourSeconds / $secondsInAnHour);
+	$hours=(int)$hours;
+
+    // extract minutes
+    $minuteSeconds = $hourSeconds % $secondsInAnHour;
+    $minutes = floor($minuteSeconds / $secondsInAMinute);
+	$minutes=(int)$minutes;
+
+    // extract the remaining seconds
+    $remainingSeconds = $minuteSeconds % $secondsInAMinute;
+    $seconds = ceil($remainingSeconds);
+	$seconds=(int)$seconds;
+
+    $msg='';
+	
+	if($days>0)
+	{
+		$msg=$days.' days';
+	}
+	if($hours>0)
+	{
+		if(trim($msg)!='')
+		{
+			$msg=$msg.', ';
+		}
+		$msg=$msg.$hours.' hours';
+	}
+	if($minutes>0)
+	{
+		if(trim($msg)!='')
+		{
+			$msg=$msg.', ';
+		}
+		$msg=$msg.$minutes.' minutes';
+	}
+	if($seconds>0)
+	{
+		if(trim($msg)!='')
+		{
+			$msg=$msg.', ';
+		}
+		$msg=$msg.$seconds.' seconds';
+	}
+	return $msg;
+}
+	
 	public function ListVouchers($dataset)
 	{
 		echo '<center><table width="100%" border="0" cellspacing="0">
@@ -41,12 +100,17 @@ class admingui
 			{
 				echo '<td>'.date('Y-m-d H:i',$dataset[$i]['valid_until']).'</td>';
 			} else {
-				echo '<td>&nbsp;</td>';
+				echo '<td><div class="disabled">Not activated yet</div></td>';
 			}
 			
 			if($dataset[$i]['valid_for']!=0)
 			{
-				echo '<td>'.$dataset[$i]['valid_for'].'</td>';
+				if($dataset[$i]['valid_until']!=0) // has the voucher been activated?
+				{
+					echo '<td><div class="disabled">'.$this->secondsToTime($dataset[$i]['valid_for']).'</div></td>'; // if it has, grey out the "valid_until" field
+				} else {
+					echo '<td>'.$this->secondsToTime($dataset[$i]['valid_for']).'</td>';
+				}
 			} else {
 				echo '<td>&nbsp;</td>';
 			}

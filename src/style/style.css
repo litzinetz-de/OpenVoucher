@@ -27,6 +27,14 @@ a, a:hover {
 .small {
 	font-size: 20;
 }
+.disabled {
+	color: #4F3063;
+}
+.tableseperator
+{
+	background-color: #c0c0c0;
+	font-size: 1;
+}
 .lightbg
 {
 	/*background-color: #F7F7F7;*/

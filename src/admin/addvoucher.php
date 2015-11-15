@@ -58,14 +58,23 @@ if((is_numeric($_POST['cnt']) && trim($_POST['cnt'])!='') && ($_POST['d']!=0 || 
 	<td>How many vouchers do you want to create?</td><td>
 	<input type="text" class="formstyle" name="cnt" size="2" value="10"> pieces (enter amount)</td>
 	</tr><tr class="lightbg"><td>
-	How long shall the voucher be valid?</td><td>
-	<input type="text" class="formstyle" name="d" size="2" value="0"> days, <input type="text" class="formstyle" name="h" size="2" value="4"> hours, 
-	<input type="text" class="formstyle" name="m" size="2" value="0"> minutes</td><td>
+	Duration/Expiration of validity</td><td>
+	<table border="0" cellspacing="0" width="100%"><tr class="darkbg">
+	<td><input type="radio" name="start_expire" value="now" id="exp_now" onchange="AddVoucherToggleExp();" checked> Fixed expiration time <input type="text" class="formstyle" name="d" size="2" value="0"> days, <input type="text" class="formstyle" name="h" size="2" value="4"> hours, 
+	<input type="text" class="formstyle" name="m" size="2" value="0"> minutes</td>
 	</td></tr>
-	<tr class="darkbg"><td>Voucher shall start to expire</td><td>
-	<input type="radio" name="start_expire" value="now" checked> Now<br>
-	<input type="radio" name="start_expire" value="given"> <input type="text" class="formstyle" name="e_d" size="2" value="0"> days, <input type="text" class="formstyle" name="e_h" size="2" value="4"> hours, 
-	<input type="text" class="formstyle" name="e_m" size="2" value="0"> minutes after activating the voucher</td></tr>
+	<tr class="lightbg">
+	<td>
+	<input type="radio" name="start_expire" value="given" id="exp_given" onchange="AddVoucherToggleExp();"> <input type="text" class="formstyle" name="e_d" size="2" value="0"> days, <input type="text" class="formstyle" name="e_h" size="2" value="4"> hours, 
+	<input type="text" class="formstyle" name="e_m" size="2" value="0"> minutes after activating the voucher</td>
+	</td>
+	</tr>
+	</table>
+	<script language="javascript">
+	AddVoucherToggleExp();
+	</script>
+	
+	</td></tr>
 	<tr class="lightbg">
 	<td>How many devices may the user register with this voucher?</td><td>
 	<input type="text" class="formstyle" name="dev-cnt" size="2" value="3"> devices</td></tr>

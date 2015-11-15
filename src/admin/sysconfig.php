@@ -42,6 +42,14 @@ if($_GET['do']=='update_general')
 	}
 }
 
+if($_GET['do']=='update_default')
+{
+	$s->SetSetting('default_voucher-qty',$_POST['qty']);
+	$s->SetSetting('force_voucher-qty',$_POST['force_voucher-qty']);
+	$s->SetSetting('default_device-qty',$_POST['qty_devices']);
+	$s->SetSetting('force_device-qty',$_POST['force_device-qty']);
+}
+
 if($_GET['do']=='logo')
 {
 	move_uploaded_file($_FILES['logo']['tmp_name'],'../graphics/'.trim($_FILES['logo']['name']));
@@ -103,15 +111,33 @@ if($s->GetSetting('use_exp_date')=='y')
 	$exp_checked='';
 }
 
+if($s->GetSetting('force_voucher-qty')=='y')
+{
+	$force_voucher_qty_checked=' checked';
+} else {
+	$force_voucher_qty_checked='';
+}
+
+if($s->GetSetting('force_device-qty')=='y')
+{
+	$force_device_qty_checked=' checked';
+} else {
+	$force_device_qty_checked='';
+}
+
 echo '<td><input type="checkbox" name="use_exp_date" value="y"'.$exp_checked.'></td></tr>
 </table>
 <br>
 <input type="submit" value="Save" class="formstyle">
 </form>
 <br><br>
-<form action="" method="post">
+<form action="'.$_SERVER['PHP_SELF'].'?do=update_default" method="post">
 <table border="0" cellspacing="1">
-<tr class="tableheader"><td colspan="2">Change and enforce default values</td></tr>
+<tr class="tableheader"><td colspan="3">Change and enforce default values</td></tr>
+<tr class="darkbg"><td>Number of vouchers to create</td><td><input type="text" name="qty" size="5" class="formstyle" value="'.$s->GetSetting('default_voucher-qty').'"> 
+</td><td><input type="checkbox" class="formstyle" name="force_voucher-qty" value="y" '.$force_voucher_qty_checked.'> Enforce</td></tr>
+<tr class="lightbg"><td>Number of devices per voucher</td><td><input type="text" name="qty_devices" class="formstyle" value="'.$s->GetSetting('default_device-qty').'">
+</td><td><input type="checkbox" class="formstyle" name="force_device-qty" value="y" '.$force_device_qty_checked.'> Enforce</td></tr>
 
 </table>
 <br>

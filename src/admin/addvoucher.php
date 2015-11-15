@@ -55,8 +55,8 @@ if((is_numeric($_POST['cnt']) && trim($_POST['cnt'])!='') && ($_POST['d']!=0 || 
 	echo '<form action="addvoucher.php" method="post" name="voucherform">
 	<table border="0" cellspacing="1">
 	<tr class="darkbg">
-	<td>How many vouchers do you want to create?</td><td>
-	<input type="text" class="formstyle" name="cnt" size="2" value="10"> pieces (enter amount)</td>
+	<td>Number of vouchers to create</td><td>
+	<input type="text" class="formstyle" name="cnt" size="2" value="10"></td>
 	</tr><tr class="lightbg"><td>
 	Duration/Expiration of validity</td><td>
 	<table border="0" cellspacing="0" width="100%"><tr class="darkbg">

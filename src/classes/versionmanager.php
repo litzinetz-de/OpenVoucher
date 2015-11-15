@@ -16,15 +16,6 @@ class versionmanager
 		return RELYEAR;
 	}
 	
-	public function NewestVersion()
-	{
-		if(!isset($this->newestversion))
-		{
-			$this->newestversion=file_get_contents('http://www.openvoucher.org/ov-data/newestver.txt');
-		}
-		return $this->newestversion;
-	}
-	
 	public function UpdateAvailable()
 	{
 		$newest=explode('.',trim($this->NewestVersion()));

@@ -48,6 +48,12 @@ if($_GET['do']=='update_default')
 	$s->SetSetting('force_voucher-qty',$_POST['force_voucher-qty']);
 	$s->SetSetting('default_device-qty',$_POST['qty_devices']);
 	$s->SetSetting('force_device-qty',$_POST['force_device-qty']);
+	$s->SetSetting('default_exp_d',$_POST['d']);
+	$s->SetSetting('default_exp_h',$_POST['h']);
+	$s->SetSetting('default_exp_m',$_POST['m']);
+	$s->SetSetting('force_exp',$_POST['force_exp']);
+	$s->SetSetting('default_start_exp',$_POST['start_exp']);
+	$s->SetSetting('force_start_exp',$_POST['force_start_exp']);
 }
 
 if($_GET['do']=='logo')
@@ -138,6 +144,11 @@ echo '<td><input type="checkbox" name="use_exp_date" value="y"'.$exp_checked.'><
 </td><td><input type="checkbox" class="formstyle" name="force_voucher-qty" value="y" '.$force_voucher_qty_checked.'> Enforce</td></tr>
 <tr class="lightbg"><td>Number of devices per voucher</td><td><input type="text" name="qty_devices" class="formstyle" value="'.$s->GetSetting('default_device-qty').'">
 </td><td><input type="checkbox" class="formstyle" name="force_device-qty" value="y" '.$force_device_qty_checked.'> Enforce</td></tr>
+<tr class="darkbg"><td>Duration/Expiration of validity</td><td><input type="text" class="formstyle" name="d" size="2" value="0"> days, <input type="text" class="formstyle" name="h" size="2" value="4"> hours, 
+<input type="text" class="formstyle" name="m" size="2" value="0"> minutes</td> <td><input type="checkbox" class="formstyle" name="force_exp" value="y" '.$force_exp_checked.'> Enforce</td></tr>
+<tr class="lightbg"><td>Set expiration time of voucher</td><td><input type="radio" class="formstyle" name="start_exp" value="creation" '.$start_exp_creation_checked.'> On creation 
+<input type="radio" class="formstyle" name="start_exp" value="usage" '.$start_exp_usage_checked.'> On first usage 
+</td><td><input type="checkbox" class="formstyle" name="force_start_exp" value="y" '.$force_start_exp_checked.'> Enforce</td></tr>
 
 </table>
 <br>

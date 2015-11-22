@@ -26,6 +26,7 @@ if($_GET['do']=='update_general')
 	$s->SetSetting('vouchertext2',$_POST['vouchertext2']);
 	$s->SetSetting('pre-form-text',$_POST['pre-form-text']);
 	$s->SetSetting('post-form-text',$_POST['post-form-text']);
+	$s->SetSetting('deny_drop_devices',$_POST['deny_drop_devices']);
 	
 	if($_POST['use_verification']=='y')
 	{
@@ -108,7 +109,7 @@ if($s->GetSetting('use_verification')=='y')
 
 echo '<td><input type="checkbox" name="use_verification" value="y"'.$veri_checked.'></td></tr>
 <tr class="lightbg">
-<td>Use expiration date for voucher codes:</td>';
+<td>Use expiration date for voucher codes (instead of issue date):</td>';
 
 if($s->GetSetting('use_exp_date')=='y')
 {
@@ -131,7 +132,38 @@ if($s->GetSetting('force_device-qty')=='y')
 	$force_device_qty_checked='';
 }
 
+if($s->GetSetting('force_exp')=='y')
+{
+	$force_exp_checked=' checked';
+} else {
+	$force_exp_checked='';
+}
+
+if($s->GetSetting('force_start_exp')=='y')
+{
+	$force_start_exp_checked=' checked';
+} else {
+	$force_start_exp_checked='';
+}
+
+if($s->GetSetting('default_start_exp')=='creation')
+{
+	$start_exp_creation_checked=' checked';
+	$start_exp_usage_checked='';
+} else {
+	$start_exp_creation_checked='';
+	$start_exp_usage_checked=' checked';
+}
+
+if($s->GetSetting('deny_drop_devices')=='y')
+{
+	$deny_drop_devices_checked=' checked';
+} else {
+	$deny_drop_devices_checked='';
+}
+
 echo '<td><input type="checkbox" name="use_exp_date" value="y"'.$exp_checked.'></td></tr>
+<tr class="darkbg"><td>Deny users to drop devices:</td><td><input type="checkbox" name="deny_drop_devices" class="formstyle" value="y" '.$deny_drop_devices_checked.'></td></tr>
 </table>
 <br>
 <input type="submit" value="Save" class="formstyle">
@@ -144,8 +176,10 @@ echo '<td><input type="checkbox" name="use_exp_date" value="y"'.$exp_checked.'><
 </td><td><input type="checkbox" class="formstyle" name="force_voucher-qty" value="y" '.$force_voucher_qty_checked.'> Enforce</td></tr>
 <tr class="lightbg"><td>Number of devices per voucher</td><td><input type="text" name="qty_devices" class="formstyle" value="'.$s->GetSetting('default_device-qty').'">
 </td><td><input type="checkbox" class="formstyle" name="force_device-qty" value="y" '.$force_device_qty_checked.'> Enforce</td></tr>
-<tr class="darkbg"><td>Duration/Expiration of validity</td><td><input type="text" class="formstyle" name="d" size="2" value="0"> days, <input type="text" class="formstyle" name="h" size="2" value="4"> hours, 
-<input type="text" class="formstyle" name="m" size="2" value="0"> minutes</td> <td><input type="checkbox" class="formstyle" name="force_exp" value="y" '.$force_exp_checked.'> Enforce</td></tr>
+
+
+<tr class="darkbg"><td>Duration/Expiration of validity</td><td><input type="text" class="formstyle" name="d" size="2" value="'.$s->GetSetting('default_exp_d').'"> days, <input type="text" class="formstyle" name="h" size="2" value="'.$s->GetSetting('default_exp_h').'"> hours, 
+<input type="text" class="formstyle" name="m" size="2" value="'.$s->GetSetting('default_exp_m').'"> minutes</td> <td><input type="checkbox" class="formstyle" name="force_exp" value="y" '.$force_exp_checked.'> Enforce</td></tr>
 <tr class="lightbg"><td>Set expiration time of voucher</td><td><input type="radio" class="formstyle" name="start_exp" value="creation" '.$start_exp_creation_checked.'> On creation 
 <input type="radio" class="formstyle" name="start_exp" value="usage" '.$start_exp_usage_checked.'> On first usage 
 </td><td><input type="checkbox" class="formstyle" name="force_start_exp" value="y" '.$force_start_exp_checked.'> Enforce</td></tr>

@@ -55,30 +55,96 @@ if((is_numeric($_POST['cnt']) && trim($_POST['cnt'])!='') && ($_POST['d']!=0 || 
 	echo '<form action="addvoucher.php" method="post" name="voucherform">
 	<table border="0" cellspacing="1">
 	<tr class="darkbg">
-	<td>Number of vouchers to create</td><td>
-	<input type="text" class="formstyle" name="cnt" size="2" value="10"></td>
-	</tr><tr class="lightbg"><td>
+	<td>Number of vouchers to create</td><td>';
+	
+	if($s->GetSetting('force_voucher-qty')=='y')
+	{
+			echo '<input type="text" class="roinput" name="cnt" size="2" value="'.$s->GetSetting('default_voucher-qty').'" readonly>';
+	} else {
+		echo '<input type="text" class="formstyle" name="cnt" size="2" value="'.$s->GetSetting('default_voucher-qty').'">';
+	}
+	
+	echo '</td></tr><tr class="lightbg"><td>
 	Duration/Expiration of validity</td><td>
-	<table border="0" cellspacing="0" width="100%"><tr class="darkbg">
-	<td><input type="radio" name="start_expire" value="now" id="exp_now" onchange="AddVoucherToggleExp();" checked> Fixed expiration time <input type="text" class="formstyle" name="d" size="2" value="0"> days, <input type="text" class="formstyle" name="h" size="2" value="4"> hours, 
-	<input type="text" class="formstyle" name="m" size="2" value="0"> minutes</td>
-	</td></tr>
-	<tr class="lightbg">
-	<td>
-	<input type="radio" name="start_expire" value="given" id="exp_given" onchange="AddVoucherToggleExp();"> <input type="text" class="formstyle" name="e_d" size="2" value="0"> days, <input type="text" class="formstyle" name="e_h" size="2" value="4"> hours, 
-	<input type="text" class="formstyle" name="e_m" size="2" value="0"> minutes after activating the voucher</td>
-	</td>
-	</tr>
+	<table border="0" cellspacing="0" width="100%"><tr class="darkbg">';
+	
+	if($s->GetSetting('default_start_exp')=='creation')
+	{
+		$exp_now_checked=' checked';
+		$exp_given_checked='';
+	} else {
+		$exp_now_checked='';
+		$exp_given_checked=' checked';
+	}
+	
+	if($s->GetSetting('force_start_exp')=='y')
+	{
+		if($s->GetSetting('force_exp')=='y')
+		{
+			echo '<td><input type="radio" name="start_expire" value="now" id="exp_now" '.$exp_now_checked.' disabled> Fixed expiration time <input type="text" class="roinput" name="d" size="2" value="'.$s->GetSetting('default_exp_d').'" readonly> days, <input type="text" class="roinput" name="h" size="2" value="'.$s->GetSetting('default_exp_h').'" readonly> hours, 
+			<input type="text" class="roinput" name="m" size="2" value="'.$s->GetSetting('default_exp_m').'" readonly> minutes</td>
+			</td></tr>
+			<tr class="lightbg">
+			<td>
+			<input type="radio" name="start_expire" value="given" id="exp_given" '.$exp_given_checked.' disabled> <input type="text" class="roinput" name="e_d" size="2" value="'.$s->GetSetting('default_exp_d').'" readonly> days, <input type="text" class="roinput" name="e_h" size="2" value="'.$s->GetSetting('default_exp_h').'" readonly> hours, 
+			<input type="text" class="roinput" name="e_m" size="2" value="'.$s->GetSetting('default_exp_m').'" readonly> minutes after activating the voucher</td>
+			</td>';
+		} else {
+			echo '<td><input type="radio" name="start_expire" value="now" id="exp_now" '.$exp_now_checked.' disabled> Fixed expiration time <input type="text" class="formstyle" name="d" size="2" value="'.$s->GetSetting('default_exp_d').'"> days, <input type="text" class="formstyle" name="h" size="2" value="'.$s->GetSetting('default_exp_h').'"> hours, 
+			<input type="text" class="formstyle" name="m" size="2" value="'.$s->GetSetting('default_exp_m').'"> minutes</td>
+			</td></tr>
+			<tr class="lightbg">
+			<td>
+			<input type="radio" name="start_expire" value="given" id="exp_given" '.$exp_given_checked.' disabled> <input type="text" class="formstyle" name="e_d" size="2" value="'.$s->GetSetting('default_exp_d').'"> days, <input type="text" class="formstyle" name="e_h" size="2" value="'.$s->GetSetting('default_exp_h').'"> hours, 
+			<input type="text" class="formstyle" name="e_m" size="2" value="'.$s->GetSetting('default_exp_m').'"> minutes after activating the voucher</td>
+			</td>';
+		}
+	} else {
+		if($s->GetSetting('force_exp')=='y')
+		{
+			echo '<td><input type="radio" name="start_expire" value="now" id="exp_now" '.$exp_now_checked.'> Fixed expiration time <input type="text" class="roinput" name="d" size="2" value="'.$s->GetSetting('default_exp_d').'" readonly> days, <input type="text" class="roinput" name="h" size="2" value="'.$s->GetSetting('default_exp_h').'" readonly> hours, 
+			<input type="text" class="roinput" name="m" size="2" value="'.$s->GetSetting('default_exp_m').'" readonly> minutes</td>
+			</td></tr>
+			<tr class="lightbg">
+			<td>
+			<input type="radio" name="start_expire" value="given" id="exp_given" '.$exp_given_checked.'> <input type="text" class="roinput" name="e_d" size="2" value="'.$s->GetSetting('default_exp_d').'" readonly> days, <input type="text" class="roinput" name="e_h" size="2" value="'.$s->GetSetting('default_exp_h').'" readonly> hours, 
+			<input type="text" class="roinput" name="e_m" size="2" value="'.$s->GetSetting('default_exp_m').'" readonly> minutes after activating the voucher</td>
+			</td>';
+		} else {
+			echo '<td><input type="radio" name="start_expire" value="now" id="exp_now" '.$exp_now_checked.'> Fixed expiration time <input type="text" class="formstyle" name="d" size="2" value="'.$s->GetSetting('default_exp_d').'"> days, <input type="text" class="formstyle" name="h" size="2" value="'.$s->GetSetting('default_exp_h').'"> hours, 
+			<input type="text" class="formstyle" name="m" size="2" value="'.$s->GetSetting('default_exp_m').'"> minutes</td>
+			</td></tr>
+			<tr class="lightbg">
+			<td>
+			<input type="radio" name="start_expire" value="given" id="exp_given" '.$exp_given_checked.'> <input type="text" class="formstyle" name="e_d" size="2" value="'.$s->GetSetting('default_exp_d').'"> days, <input type="text" class="formstyle" name="e_h" size="2" value="'.$s->GetSetting('default_exp_h').'"> hours, 
+			<input type="text" class="formstyle" name="e_m" size="2" value="'.$s->GetSetting('default_exp_m').'"> minutes after activating the voucher</td>
+			</td>';
+		}
+	}
+	
+	
+	
+	echo '</tr>
 	</table>
-	<script language="javascript">
-	AddVoucherToggleExp();
-	</script>
+	<script language="javascript">';
+	if($s->GetSetting('force_exp')!='y')
+	{
+		echo 'AddVoucherToggleExp();';
+	}
+	echo '</script>
 	
 	</td></tr>
 	<tr class="lightbg">
-	<td>How many devices may the user register with this voucher?</td><td>
-	<input type="text" class="formstyle" name="dev-cnt" size="2" value="3"> devices</td></tr>
-	<tr class="darkbg"><td>
+	<td>How many devices may the user register with this voucher?</td><td>';
+	
+	if($s->GetSetting('force_voucher-qty')=='y')
+	{
+		echo '<input type="text" class="roinput" name="dev-cnt" size="2" value="'.$s->GetSetting('default_voucher-qty').'" readonly>';
+	} else {
+		echo '<input type="text" class="formstyle" name="dev-cnt" size="2" value="'.$s->GetSetting('default_voucher-qty').'">';
+	}
+	
+	echo ' devices</td></tr><tr class="darkbg"><td>
 	You may enter a comment if you with (e.g. the user\'s name):</td><td>
 	<input type="text" class="formstyle" name="comment" size="20"></td></tr>
 	</table>

@@ -11,3 +11,5 @@ INSERT INTO settings (setting,s_value) VALUES ('default_exp_m','0');
 INSERT INTO settings (setting,s_value) VALUES ('force_exp','');
 INSERT INTO settings (setting,s_value) VALUES ('default_start_exp','creation');
 INSERT INTO settings (setting,s_value) VALUES ('force_start_exp','');
+
+INSERT INTO settings (setting,s_value) VALUES ('deny_user_drop_device','');

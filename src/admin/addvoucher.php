@@ -17,11 +17,39 @@ include('../includes/header.php');
 include('menu.php');
 
 // Has a number been entered or do we have to display the form? Has the user set how long the voucher should be valid?
-if((is_numeric($_POST['cnt']) && trim($_POST['cnt'])!='') && ($_POST['d']!=0 || $_POST['h']!=0 || $_POST['m']!=0) && $_POST['start_expire']!='')
+if((is_numeric($_POST['cnt']) && trim($_POST['cnt'])!='') && ($_POST['d']!=0 || $_POST['h']!=0 || $_POST['m']!=0) && ($_POST['start_expire']!='' || $s->GetSetting('force_start_exp')=='y'))
 {
 	// Include and load the vouchermanager
 	require('../classes/vouchermanager.php');
 	$v = new vouchermanager();
+	
+	// Replace entered values with default values, if enforced. This prevents the user from injecting forbidden values to the system
+	if($s->GetSetting('force_device-qty')=='y')
+	{
+		$_POST['dev-cnt']=$s->GetSetting('default_device-qty');
+	}
+	if($s->GetSetting('force_start_exp')=='y')
+	{
+		if($s->GetSetting('default_start_exp')=='creation')
+		{
+			$_POST['start_expire']='now';
+		} else {
+			$_POST['start_expire']='given';
+		}
+	}
+	if($s->GetSetting('force_exp')=='y')
+	{
+		$_POST['d']=$s->GetSetting('default_exp_d');
+		$_POST['e_d']=$_POST['d'];
+		$_POST['h']=$s->GetSetting('default_exp_h');
+		$_POST['e_h']=$_POST['h'];
+		$_POST['m']=$s->GetSetting('default_exp_m');
+		$_POST['e_m']=$_POST['m'];
+	}
+	if($s->GetSetting('force_voucher-qty')=='y')
+	{
+		$_POST['cnt']=$s->GetSetting('default_voucher-qty');
+	}
 
 	if(!is_numeric($_POST['dev-cnt'])) $_POST['dev-cnt']=1; // Has the user enterered a numeric value for the device count?
 	
@@ -139,9 +167,9 @@ if((is_numeric($_POST['cnt']) && trim($_POST['cnt'])!='') && ($_POST['d']!=0 || 
 	
 	if($s->GetSetting('force_voucher-qty')=='y')
 	{
-		echo '<input type="text" class="roinput" name="dev-cnt" size="2" value="'.$s->GetSetting('default_voucher-qty').'" readonly>';
+		echo '<input type="text" class="roinput" name="dev-cnt" size="2" value="'.$s->GetSetting('default_device-qty').'" readonly>';
 	} else {
-		echo '<input type="text" class="formstyle" name="dev-cnt" size="2" value="'.$s->GetSetting('default_voucher-qty').'">';
+		echo '<input type="text" class="formstyle" name="dev-cnt" size="2" value="'.$s->GetSetting('default_device-qty').'">';
 	}
 	
 	echo ' devices</td></tr><tr class="darkbg"><td>

@@ -1,7 +1,9 @@
 <?php
 require('../classes/adminauth.php');
+require('../classes/systemmanager.php');
 
 $a = new adminauth();
+$s = new systemmanager();
 
 if(!$a->CheckPermission('add_voucher'))
 {
@@ -17,7 +19,7 @@ include('../includes/header.php');
 include('menu.php');
 
 // Has a number been entered or do we have to display the form? Has the user set how long the voucher should be valid?
-if((is_numeric($_POST['cnt']) && trim($_POST['cnt'])!='') && ($_POST['d']!=0 || $_POST['h']!=0 || $_POST['m']!=0) && ($_POST['start_expire']!='' || $s->GetSetting('force_start_exp')=='y'))
+if((is_numeric($_POST['cnt']) && trim($_POST['cnt'])!='') && (($_POST['d']!=0 || $_POST['h']!=0 || $_POST['m']!=0) || ($_POST['e_d']!=0 || $_POST['e_h']!=0 || $_POST['e_m']!=0)) && ($_POST['start_expire']!='' || $s->GetSetting('force_start_exp')=='y'))
 {
 	// Include and load the vouchermanager
 	require('../classes/vouchermanager.php');

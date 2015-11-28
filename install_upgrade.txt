@@ -1,0 +1,29 @@
+If you are going to setup a fresh installation of OpenVoucher, check the following link for installation instructions:
+
+http://openvoucher.litzinetz.de/documentation/installation/installation-from-source/
+
+If you're upgrading from a previous version, please follow these instructions:
+
+!!! When upgrading, you MUST have at least version 0.4.3 installed. If not, you should do a full reinstallation of OpenVoucher. You can export your MySQL database before the reinstallation and import it to the new database schema, to keep your data
+
+----
+
+* Copy the archive to your server and extract it
+
+* Change to the www directory of your webserver. On Debian systems, this is usually /var/www or /var/www/html
+
+* Copy the file includes/config.php to a safe place, e.g. /root/
+
+* While still in the www directory, delete all contents of this directory (rm -rf *)
+
+* Copy the contents of the src/ directory from the archive into your www directory (please don't forget the .htaccess file, it is a hidden file!)
+
+* Copy the file config.php, which you have just saved, back to it's original location to restore your config settings
+
+* Make sure all the files and directorys inside your www directory are owned by the user running the webserver (e.g. chown -R www-data:www-data /var/www/)
+
+* Change to the database/ directory from the archive
+
+* Perform a database upgrade using the following command: mysql -u root -p < upgrade_0.4.3-1.0.0.sql (you will be asked for your mysql root password)
+
+You're done!

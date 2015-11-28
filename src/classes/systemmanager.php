@@ -16,14 +16,18 @@ if(!class_exists('systemmanager'))
 			$this->defaults['post-form-text']='Feel free to contact an administrator if you have any problems.';
 			$this->defaults['use_verification']='n';
 			
-			$this->mysqlconn=mysql_connect(MYSQL_HOST,MYSQL_USER,MYSQL_PWD);
-			mysql_select_db(MYSQL_DB,$this->mysqlconn);
+			//$this->mysqlconn=mysql_connect(MYSQL_HOST,MYSQL_USER,MYSQL_PWD);
+			//mysql_select_db(MYSQL_DB,$this->mysqlconn);
+			$this->mysqlconn=new mysqli(MYSQL_HOST,MYSQL_USER,MYSQL_PWD,MYSQL_DB);
 		}
 		
 		public function GetSetting($setting)
 		{
-			$res=mysql_query('SELECT s_value FROM settings WHERE setting="'.$setting.'"',$this->mysqlconn);
-			$row=mysql_fetch_array($res);
+			//$res=mysql_query('SELECT s_value FROM settings WHERE setting="'.$setting.'"',$this->mysqlconn);
+			$qry='SELECT s_value FROM settings WHERE setting="'.$this->mysqlconn->real_escape_string($setting).'"';
+			$res=$this->mysqlconn->query($qry);
+			//$row=mysql_fetch_array($res);
+			$row=$res->fetch_assoc();
 			$return_value=$row['s_value'];
 			
 			if($return_value=='')
@@ -36,15 +40,19 @@ if(!class_exists('systemmanager'))
 		
 		public function SetSetting($setting,$value)
 		{
-			$res=mysql_query('SELECT COUNT(*) AS cnt FROM settings WHERE setting="'.$setting.'"',$this->mysqlconn);
-			$row=mysql_fetch_array($res);
+			//$res=mysql_query('SELECT COUNT(*) AS cnt FROM settings WHERE setting="'.$setting.'"',$this->mysqlconn);
+			$qry='SELECT COUNT(*) AS cnt FROM settings WHERE setting="'.$this->mysqlconn->real_escape_string($setting).'"';
+			$res=$this->mysqlconn->query($qry);
+			//$row=mysql_fetch_array($res);
+			$row=$res->fetch_assoc();
 			if($row['cnt']>0)
 			{
-				$query='UPDATE settings SET s_value="'.$value.'" WHERE setting="'.$setting.'"';
+				$qry='UPDATE settings SET s_value="'.$this->mysqlconn->real_escape_string($value).'" WHERE setting="'.$this->mysqlconn->real_escape_string($setting).'"';
 			} else {
-				$query='INSERT INTO settings (setting,s_value) VALUES ("'.$setting.'","'.$value.'")';
+				$qry='INSERT INTO settings (setting,s_value) VALUES ("'.$this->mysqlconn->real_escape_string($setting).'","'.$this->mysqlconn->real_escape_string($value).'")';
 			}
-			mysql_query($query,$this->mysqlconn);
+			//mysql_query($query,$this->mysqlconn);
+			$this->mysqlconn->query($qry);
 		}
 	}
 }

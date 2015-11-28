@@ -10,7 +10,7 @@ include('../includes/header.php');
 include('menu.php');
 
 echo 'OpenVoucher<br>Version '.$vers->GetCurrentVersion().'<br><br>
-Copyright (C) '.$vers->GetReleaseYear().'  Daniel Litzbach (litzi0815) and others<br><br>
+Copyright (C) '.$vers->GetReleaseYear().'  Daniel Litzbach (<a href="http://www.litzinetz.de/" target="_blank">www.litzinetz.de</a>) and others<br><br>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -26,12 +26,6 @@ Copyright (C) '.$vers->GetReleaseYear().'  Daniel Litzbach (litzi0815) and other
     along with this program.  If not, see <a href="http://www.gnu.org/licenses/" target="_blank">http://www.gnu.org/licenses/</a>.
 	<br><br>
 	The OpenVoucher logo is based on the work by <a href="http://commons.wikimedia.org/wiki/User:RRZEicons" target="_blank">RRZEicons</a>.';
-	
-	if($vers->UpdateAvailable())
-	{
-		echo '<br><br><b>An update is available. The newest version is '.$vers->NewestVersion().', you are currently running '.$vers->GetCurrentVersion().'<br>Please check <a href="http://www.openvoucher.org/" target="_blank">www.openvoucher.org</a> for 
-		update instructions.</b>';
-	}
 ?>
 </body>
 </html>

@@ -20,12 +20,13 @@ include('menu.php');
 
 echo '<center><b>Manage system config</b></center><br><br>';
 
-if($_GET['do']=='update')
+if($_GET['do']=='update_general')
 {
 	$s->SetSetting('vouchertext1',$_POST['vouchertext1']);
 	$s->SetSetting('vouchertext2',$_POST['vouchertext2']);
 	$s->SetSetting('pre-form-text',$_POST['pre-form-text']);
 	$s->SetSetting('post-form-text',$_POST['post-form-text']);
+	$s->SetSetting('deny_drop_devices',$_POST['deny_drop_devices']);
 	
 	if($_POST['use_verification']=='y')
 	{
@@ -40,6 +41,20 @@ if($_GET['do']=='update')
 	} else {
 		$s->SetSetting('use_exp_date','n');
 	}
+}
+
+if($_GET['do']=='update_default')
+{
+	$s->SetSetting('default_voucher-qty',$_POST['qty']);
+	$s->SetSetting('force_voucher-qty',$_POST['force_voucher-qty']);
+	$s->SetSetting('default_device-qty',$_POST['qty_devices']);
+	$s->SetSetting('force_device-qty',$_POST['force_device-qty']);
+	$s->SetSetting('default_exp_d',$_POST['d']);
+	$s->SetSetting('default_exp_h',$_POST['h']);
+	$s->SetSetting('default_exp_m',$_POST['m']);
+	$s->SetSetting('force_exp',$_POST['force_exp']);
+	$s->SetSetting('default_start_exp',$_POST['start_exp']);
+	$s->SetSetting('force_start_exp',$_POST['force_start_exp']);
 }
 
 if($_GET['do']=='logo')
@@ -63,22 +78,27 @@ if($_GET['do']=='del_logo')
 	}
 }
 
-echo '<table border="0" cellspacing="0">
-<tr>
-<form action="'.$_SERVER['PHP_SELF'].'?do=update" method="post">
-<td valign="top" width="20%">Voucher information text 1:<br>
-<small>First line of info text shown in the voucher. Type a space for empty text.</small>
-</td><td><input type="text" class="formstyle" name="vouchertext1" size="20" value="'.$s->GetSetting('vouchertext1').'"></td></tr>
+echo '<table border="0" cellspacing="1">
+<tr class="tableheader"><td colspan="2">General Settings</td></tr>
+<tr class="darkbg">
+<form action="'.$_SERVER['PHP_SELF'].'?do=update_general" method="post">
+<td valign="top">Voucher information text 1:<br>
+<small>First line of info text shown in the voucher.</small>
+</td><td><input type="text" class="formstyle" name="vouchertext1" size="50" value="'.$s->GetSetting('vouchertext1').'"></td></tr>
+<tr class="lightbg">
 <td valign="top">Voucher information text 2:<br>
-<small>Second line of info text shown in the voucher. Type a space for empty text.</small>
-</td><td><input type="text" class="formstyle" name="vouchertext2" size="20" value="'.$s->GetSetting('vouchertext2').'"></td></tr>
+<small>Second line of info text shown in the voucher.</small>
+</td><td><input type="text" class="formstyle" name="vouchertext2" size="50" value="'.$s->GetSetting('vouchertext2').'"></td></tr>
+<tr class="darkbg">
 <td valign="top">Pre-form text:<br>
-<small>This text is shown on the landing page above the form. Type a space for empty text.</small>
-</td><td><input type="text" class="formstyle" name="pre-form-text" size="20" value="'.$s->GetSetting('pre-form-text').'"></td></tr>
+<small>This text is shown on the landing page above the form.</small>
+</td><td><input type="text" class="formstyle" name="pre-form-text" size="50" value="'.$s->GetSetting('pre-form-text').'"></td></tr>
+<tr class="lightbg">
 <td valign="top">Post-form text:<br>
-<small>This text is shown on the landing page below the form. Type a space for empty text.</small>
-</td><td><input type="text" class="formstyle" name="post-form-text" size="20" value="'.$s->GetSetting('post-form-text').'"></td></tr>
-<tr><td>Use verification keys:</td>';
+<small>This text is shown on the landing page below the form.</small>
+</td><td><input type="text" class="formstyle" name="post-form-text" size="50" value="'.$s->GetSetting('post-form-text').'"></td></tr>
+<tr class="darkbg">
+<td>Use verification keys:</td>';
 
 if($s->GetSetting('use_verification')=='y')
 {
@@ -88,7 +108,8 @@ if($s->GetSetting('use_verification')=='y')
 }
 
 echo '<td><input type="checkbox" name="use_verification" value="y"'.$veri_checked.'></td></tr>
-<tr><td>Use expiration date for voucher codes:</td>';
+<tr class="lightbg">
+<td>Use expiration date for voucher codes (instead of issue date):</td>';
 
 if($s->GetSetting('use_exp_date')=='y')
 {
@@ -97,14 +118,83 @@ if($s->GetSetting('use_exp_date')=='y')
 	$exp_checked='';
 }
 
+if($s->GetSetting('force_voucher-qty')=='y')
+{
+	$force_voucher_qty_checked=' checked';
+} else {
+	$force_voucher_qty_checked='';
+}
+
+if($s->GetSetting('force_device-qty')=='y')
+{
+	$force_device_qty_checked=' checked';
+} else {
+	$force_device_qty_checked='';
+}
+
+if($s->GetSetting('force_exp')=='y')
+{
+	$force_exp_checked=' checked';
+} else {
+	$force_exp_checked='';
+}
+
+if($s->GetSetting('force_start_exp')=='y')
+{
+	$force_start_exp_checked=' checked';
+} else {
+	$force_start_exp_checked='';
+}
+
+if($s->GetSetting('default_start_exp')=='creation')
+{
+	$start_exp_creation_checked=' checked';
+	$start_exp_usage_checked='';
+} else {
+	$start_exp_creation_checked='';
+	$start_exp_usage_checked=' checked';
+}
+
+if($s->GetSetting('deny_drop_devices')=='y')
+{
+	$deny_drop_devices_checked=' checked';
+} else {
+	$deny_drop_devices_checked='';
+}
+
 echo '<td><input type="checkbox" name="use_exp_date" value="y"'.$exp_checked.'></td></tr>
+<tr class="darkbg"><td>Deny users to drop devices:</td><td><input type="checkbox" name="deny_drop_devices" class="formstyle" value="y" '.$deny_drop_devices_checked.'></td></tr>
+</table>
+<br>
+<input type="submit" value="Save" class="formstyle">
+</form>
+<br><br>
+<form action="'.$_SERVER['PHP_SELF'].'?do=update_default" method="post">
+<table border="0" cellspacing="1">
+<tr class="tableheader"><td colspan="3">Change and enforce default values</td></tr>
+<tr class="darkbg"><td>Number of vouchers to create</td><td><input type="text" name="qty" size="5" class="formstyle" value="'.$s->GetSetting('default_voucher-qty').'"> 
+</td><td><input type="checkbox" class="formstyle" name="force_voucher-qty" value="y" '.$force_voucher_qty_checked.'> Enforce</td></tr>
+<tr class="lightbg"><td>Number of devices per voucher</td><td><input type="text" name="qty_devices" class="formstyle" value="'.$s->GetSetting('default_device-qty').'">
+</td><td><input type="checkbox" class="formstyle" name="force_device-qty" value="y" '.$force_device_qty_checked.'> Enforce</td></tr>
+
+
+<tr class="darkbg"><td>Duration/Expiration of validity</td><td><input type="text" class="formstyle" name="d" size="2" value="'.$s->GetSetting('default_exp_d').'"> days, <input type="text" class="formstyle" name="h" size="2" value="'.$s->GetSetting('default_exp_h').'"> hours, 
+<input type="text" class="formstyle" name="m" size="2" value="'.$s->GetSetting('default_exp_m').'"> minutes</td> <td><input type="checkbox" class="formstyle" name="force_exp" value="y" '.$force_exp_checked.'> Enforce</td></tr>
+<tr class="lightbg"><td>Set expiration time of voucher</td><td><input type="radio" class="formstyle" name="start_exp" value="creation" '.$start_exp_creation_checked.'> On creation 
+<input type="radio" class="formstyle" name="start_exp" value="usage" '.$start_exp_usage_checked.'> On first usage 
+</td><td><input type="checkbox" class="formstyle" name="force_start_exp" value="y" '.$force_start_exp_checked.'> Enforce</td></tr>
+
 </table>
 <br>
 <input type="submit" value="Save" class="formstyle">
 </form>
 
 <br><br>
-Logo:<br>';
+<table border="0" cellspacing="1">
+<tr class="tableheader"><td colspan="2">Change logo</td></tr>
+<tr class="darkbg">
+<td>
+Logo:</td><td>';
 
 $logo=$s->GetSetting('logo');
 if(file_exists('../graphics/'.$logo) && !is_dir('../graphics/'.$logo))
@@ -114,10 +204,14 @@ if(file_exists('../graphics/'.$logo) && !is_dir('../graphics/'.$logo))
 	echo '<i>No image defined or not found</i>';
 }
 
-echo '<br><br>
-You can upload a new logo here. This will overwrite your existing logo.<br>
+echo '</td></tr>
+<tr class="lightbg"><td>
+You can upload a new logo here. This will overwrite your existing logo.</td><td>
 <form action="'.$_SERVER['PHP_SELF'].'?do=logo" method="post" enctype="multipart/form-data">
-<input type="file" name="logo" class="formstyle"><br><br>
+<input type="file" name="logo" class="formstyle">
+</td></tr>
+</table>
+<br>
 <input type="submit" value="Upload" class="formstyle">
 </form>
 </body></html>';

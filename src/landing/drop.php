@@ -10,6 +10,11 @@ $authtype=$v->GetAuthMethod();
 
 require('../includes/header.php');
 
+if($s->GetSetting('deny_drop_devices')=='y')
+{
+	die('Sorry, dropping devices has been disabled by the admin.');
+}
+
 if($_GET['do']=='')
 {
 	echo 'To drop a device, please enter your voucher code again:<br><br>

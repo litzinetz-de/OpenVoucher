@@ -21,14 +21,18 @@ class adminauth
 		$this->auth_ok=true;
 		session_start();
 		
-		$this->mysqlconn=mysql_connect(MYSQL_HOST,MYSQL_USER,MYSQL_PWD);
-		mysql_select_db(MYSQL_DB,$this->mysqlconn);
+		//$this->mysqlconn=mysql_connect(MYSQL_HOST,MYSQL_USER,MYSQL_PWD);
+		//mysql_select_db(MYSQL_DB,$this->mysqlconn);
+		$this->mysqlconn=new mysqli(MYSQL_HOST,MYSQL_USER,MYSQL_PWD,MYSQL_DB);
 		
 		if(trim($_POST['user'])!='' && trim($_POST['pwd'])!='') // Got credentials from form - new user
 		{
 			// Get and check password
-			$res=mysql_query('SELECT username,pwd FROM users WHERE username="'.$_POST['user'].'"',$this->mysqlconn);
-			$row=mysql_fetch_array($res);
+			//$res=mysql_query('SELECT username,pwd FROM users WHERE username="'.$_POST['user'].'"',$this->mysqlconn);
+			$qry='SELECT username,pwd FROM users WHERE username="'.$this->mysqlconn->real_escape_string($_POST['user']).'"';
+			$res=$this->mysqlconn->query($qry);
+			//$row=mysql_fetch_array($res);
+			$row=$res->fetch_assoc();
 			if($row['pwd']!=sha1($_POST['pwd'])) // Password correct?
 			{
 				$this->auth_ok=false; // Not correct
@@ -42,8 +46,11 @@ class adminauth
 				$this->auth_ok=false; // No active session, user has to login first
 			} else {
 				// There is an active session, we will check if the username is correct
-				$res=mysql_query('SELECT COUNT(*) AS cnt FROM users WHERE username="'.$_SESSION['login'].'"',$this->mysqlconn);
-				$row=mysql_fetch_array($res);
+				//$res=mysql_query('SELECT COUNT(*) AS cnt FROM users WHERE username="'.$_SESSION['login'].'"',$this->mysqlconn);
+				$qry='SELECT COUNT(*) AS cnt FROM users WHERE username="'.$this->mysqlconn->real_escape_string($_SESSION['login']).'"';
+				$res=$this->mysqlconn->query($qry);
+				//$row=mysql_fetch_array($res);
+				$row=$res->fetch_assoc();
 				if($row['cnt']==0 || trim($row['cnt'])=='')
 				{
 					$this->auth_ok=false; // Username in session not found in database or database error
@@ -123,14 +130,20 @@ class adminauth
 	
 	public function CheckPermission($permission) // Check if the logged in user has a specific permission
 	{
-		$res=mysql_query('SELECT COUNT(*) AS cnt FROM permissions WHERE username="'.$_SESSION['login'].'" AND permission="all"',$this->mysqlconn);
-		$row=mysql_fetch_array($res);
+		//$res=mysql_query('SELECT COUNT(*) AS cnt FROM permissions WHERE username="'.$_SESSION['login'].'" AND permission="all"',$this->mysqlconn);
+		$qry='SELECT COUNT(*) AS cnt FROM permissions WHERE username="'.$this->mysqlconn->real_escape_string($_SESSION['login']).'" AND permission="all"';
+		//$row=mysql_fetch_array($res);
+		$res=$this->mysqlconn->query($qry);
+		$row=$res->fetch_assoc();
 		if($row['cnt']>0)
 		{
 			return true;
 		} else {
-			$res=mysql_query('SELECT COUNT(*) AS cnt FROM permissions WHERE username="'.$_SESSION['login'].'" AND permission="'.$permission.'"',$this->mysqlconn);
-			$row=mysql_fetch_array($res);
+			//$res=mysql_query('SELECT COUNT(*) AS cnt FROM permissions WHERE username="'.$_SESSION['login'].'" AND permission="'.$permission.'"',$this->mysqlconn);
+			$qry='SELECT COUNT(*) AS cnt FROM permissions WHERE username="'.$this->mysqlconn->real_escape_string($_SESSION['login']).'" AND permission="'.$this->mysqlconn->real_escape_string($permission).'"';
+			$res=$this->mysqlconn->query($qry);
+			//$row=mysql_fetch_array($res);
+			$row=$res->fetch_assoc();
 			if($row['cnt']>0)
 			{
 				return true;

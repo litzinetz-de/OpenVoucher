@@ -1,6 +1,6 @@
 <?php
-define('CURRENTVER','0.4.3');
-define('RELYEAR',2014);
+define('CURRENTVER','1.0.0');
+define('RELYEAR',2015);
 
 class versionmanager
 {
@@ -14,15 +14,6 @@ class versionmanager
 	public function GetReleaseYear()
 	{
 		return RELYEAR;
-	}
-	
-	public function NewestVersion()
-	{
-		if(!isset($this->newestversion))
-		{
-			$this->newestversion=file_get_contents('http://www.openvoucher.org/ov-data/newestver.txt');
-		}
-		return $this->newestversion;
 	}
 	
 	public function UpdateAvailable()

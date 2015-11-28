@@ -1,0 +1,16 @@
+Release notes for version 1.0.0
+
+Minimum required version when upgrading: 0.4.3
+
+Bugfixes
+========
+
+* Disabled caching for the landing page - this might lead to issues after authenticating
+* Reimplemented MySQL connection - mysql_connect and its' little helpers are deprecated. We're using mysqli now. See http://php.net/manual/en/function.mysql-connect.php for details
+
+Features
+========
+
++ Vouchers can now have a dynamic expiration time, based on the timestamp at the first usage
++ Dropping devices by the end user can now be disabled
++ A new config section "Change and enforce default values" is now available. It can be used for configuring various default values. Admins are optionally able to enforce each of these values, users that have the permission to issue vouchers are then bound to these default values and cannot change them anymore

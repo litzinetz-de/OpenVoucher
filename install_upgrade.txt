@@ -1,6 +1,12 @@
+Fresh installation
+==================
+
 If you are going to setup a fresh installation of OpenVoucher, check the following link for installation instructions:
 
 http://openvoucher.litzinetz.de/documentation/installation/installation-from-source/
+
+Upgrading a running installation
+================================
 
 If you're upgrading from a previous version, please follow these instructions:
 
